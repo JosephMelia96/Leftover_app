@@ -74,7 +74,7 @@ public class Main2Activity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         Toast.makeText(Main2Activity.this, "Sign out successful", Toast.LENGTH_LONG).show();
-                        finish();
+                        Main2Activity.this.finish();
                     }
                 });
     }

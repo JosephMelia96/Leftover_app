@@ -25,7 +25,6 @@ import com.google.android.gms.tasks.Task;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    SignInButton signIn;
     int RC_SIGN_IN = 0;
     GoogleSignInClient mGoogleSignInClient;
 
@@ -65,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        //updateUI(account);
+        updateUI(account);
     }
 
     @Override
@@ -96,8 +95,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void updateUI(GoogleSignInAccount account) {
-        Intent intent = new Intent(this,Main2Activity.class);
-        intent.putExtra("name",account.getDisplayName());
-        startActivity(intent);
+        if (account != null) {
+            startActivity(new Intent(this,Main2Activity.class));
+        }
     }
 }
