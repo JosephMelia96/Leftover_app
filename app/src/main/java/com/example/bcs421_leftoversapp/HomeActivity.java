@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -20,43 +19,31 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-public class Main2Activity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView name, email, id;
     ImageView googlePhoto;
-    Button signOut;
+
 
     GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_home);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        name = findViewById(R.id.userName);
-        email = findViewById(R.id.email);
-        id = findViewById(R.id.userId);
-        googlePhoto = findViewById(R.id.userPhoto);
-        signOut = findViewById(R.id.signOutButton);
-        signOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch (view.getId()) {
-                    case R.id.signOutButton:
-                        signOut();
-                        break;
-                }
-            }
-        });
-
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        initViews();
+        showUserInfo(acct);
+    }
+
+    private void showUserInfo(GoogleSignInAccount acct) {
         if (acct != null) {
-            String personName = getIntent().getStringExtra("name");
+            String personName = acct.getDisplayName();
             String personEmail = acct.getEmail();
             String personId = acct.getId();
             Uri personPhoto = acct.getPhotoUrl();
@@ -68,15 +55,32 @@ public class Main2Activity extends AppCompatActivity {
         }
     }
 
+    private void initViews() {
+        name = findViewById(R.id.userName);
+        email = findViewById(R.id.email);
+        id = findViewById(R.id.userId);
+        googlePhoto = findViewById(R.id.userPhoto);
+        findViewById(R.id.signOutButton).setOnClickListener(this);
+    }
+
     private void signOut() {
         mGoogleSignInClient.signOut()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(Main2Activity.this, "Sign out successful", Toast.LENGTH_LONG).show();
-                        Main2Activity.this.finish();
+                        Toast.makeText(HomeActivity.this, "Sign out successful", Toast.LENGTH_LONG).show();
+                        HomeActivity.this.finish();
                     }
                 });
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.signOutButton:
+                signOut();
+                break;
+        }
+
+    }
 }

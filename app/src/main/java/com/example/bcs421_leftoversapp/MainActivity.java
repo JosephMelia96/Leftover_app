@@ -1,6 +1,5 @@
 package com.example.bcs421_leftoversapp;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -9,18 +8,11 @@ import android.util.Log;
 import android.view.View;
 
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInApi;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.signin.SignInOptions;
 import com.google.android.gms.tasks.Task;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -96,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void updateUI(GoogleSignInAccount account) {
         if (account != null) {
-            startActivity(new Intent(this,Main2Activity.class));
+            startActivity(new Intent(this, HomeActivity.class));
         }
     }
 }
