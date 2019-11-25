@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+
 public class HomeFragment extends Fragment {
 
     EditText searchBar;
@@ -22,6 +23,7 @@ public class HomeFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_home,container,false);
 
         searchBar = v.findViewById(R.id.search);
+
 
         return v;
 
