@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">BCS421-LeftoversApp</string>
+    <string name="app_name">LeftOver!</string>
     <string name="sign_out">Sign Out</string>
     <string name="description">Users google photo</string>
-    <string name="server_client_id">743532097943-1vktova61p8igh5hc1qdda7bri4slfsm.apps.googleusercontent.com</string>
 </resources>
