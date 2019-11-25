@@ -36,13 +36,13 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_marginTop="20dp"
-            android:src="@drawable/ic_search"/>
+            android:src="@drawable/breakfast"/>
 
         <ImageView
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_marginTop="20dp"
-            android:src="@drawable/ic_search"/>
+            android:src="@drawable/lunch"/>
 
     </LinearLayout>
 
@@ -57,33 +57,13 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_marginTop="20dp"
-            android:src="@drawable/ic_search"/>
+            android:src="@drawable/dinner"/>
 
         <ImageView
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_marginTop="20dp"
-            android:src="@drawable/ic_search"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/menuLL2"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/ic_search"/>
-
-        <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/ic_search"/>
+            android:src="@drawable/dessert"/>
 
     </LinearLayout>
 
