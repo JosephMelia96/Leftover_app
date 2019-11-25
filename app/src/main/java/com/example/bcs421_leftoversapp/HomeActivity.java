@@ -31,7 +31,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private DrawerLayout drawerLayout;
     NavigationView navigationView;
     View headerView;
-
     GoogleSignInClient mGoogleSignInClient;
 
     @Override
@@ -42,6 +41,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
+
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
         initViews();
@@ -64,6 +64,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new HomeFragment()).commit();
+
             navigationView.setCheckedItem(R.id.nav_home);
         }
     }
