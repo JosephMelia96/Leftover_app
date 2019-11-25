@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        updateUI(account);
+        //updateUI(account);
     }
 
     @Override
@@ -96,7 +96,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void updateUI(GoogleSignInAccount account) {
-
-        startActivity(new Intent(this,Main2Activity.class));
+        Intent intent = new Intent(this,Main2Activity.class);
+        intent.putExtra("name",account.getDisplayName());
+        startActivity(intent);
     }
 }
