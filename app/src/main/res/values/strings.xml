@@ -2,4 +2,7 @@
     <string name="app_name">LeftOver!</string>
     <string name="sign_out">Sign Out</string>
     <string name="description">Users google photo</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
 </resources>
