@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 
 import com.example.bcs421_leftoversapp.adapters.RecipeSearchResultAdapter;
-import com.example.bcs421_leftoversapp.models.RecipePreview;
 import com.example.bcs421_leftoversapp.service.recipe.RecipeService;
 import com.example.bcs421_leftoversapp.service.recipe.recipepuppy.RecipePuppyService;
 
