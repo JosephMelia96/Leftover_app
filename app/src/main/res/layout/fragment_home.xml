@@ -33,28 +33,49 @@
         android:text="TEST API OUTPUT"
         android:layout_centerHorizontal="true"/>
 
- <GridLayout
-     android:layout_width="match_parent"
-     android:layout_height="match_parent"
-     android:layout_below="@id/apiText"
-     android:columnCount="3"
-     android:rowCount="2">
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/apiText"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="23dp"
+        android:layout_marginBottom="-7dp"
+        android:columnCount="3"
+        android:rowCount="2">
 
-     <ImageView
-         android:layout_width="150dp"
-         android:layout_height="150dp"
-         android:layout_row="0"
-         android:layout_column="0"
-         android:src="@drawable/breakfast" />
+        <ImageView
+            android:id="@+id/breakfastView"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:src="@drawable/breakfast" />
 
-     <ImageView
-         android:layout_width="150dp"
-         android:layout_height="150dp"
-         android:layout_row="0"
-         android:layout_column="2"
-         android:src="@drawable/lunch" />
+        <ImageView
+            android:id="@+id/lunchView"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_row="0"
+            android:layout_column="2"
+            android:src="@drawable/lunch" />
+
+        <ImageView
+            android:id="@+id/dinnerView"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:src="@drawable/dinner" />
+
+        <ImageView
+            android:id="@+id/dessertView"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_row="1"
+            android:layout_column="2"
+            android:src="@drawable/dessert" />
 
 
- </GridLayout>
+    </GridLayout>
 
 </RelativeLayout>
