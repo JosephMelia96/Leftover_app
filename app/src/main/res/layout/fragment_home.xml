@@ -54,7 +54,7 @@
             android:paddingBottom="2.5dp"
             android:paddingLeft="5dp"
             android:paddingRight="2.5dp"
-            android:src="@drawable/breakfast"/>
+            android:src="@drawable/breakfast_n"/>
 
         <ImageView
             android:id="@+id/lunchView"
