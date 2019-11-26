@@ -1,5 +1,8 @@
 package com.example.bcs421_leftoversapp.models;
 
+/**
+ * Represents a preview of a recipe as displayed for example in a search result.
+ */
 public class RecipePreview {
 
     private String title;
