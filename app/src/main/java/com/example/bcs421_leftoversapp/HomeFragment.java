@@ -1,33 +1,32 @@
 package com.example.bcs421_leftoversapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 
+
 public class HomeFragment extends Fragment {
 
-    EditText searchBar;
-    TextView apiOutput;
+    Button btn_searchRecipe;
 
-    @Nullable
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_home,container,false);
+        View v = inflater.inflate(R.layout.fragment_home, container, false);
+        btn_searchRecipe = v.findViewById(R.id.btn_searchRecipes);
 
-        searchBar = v.findViewById(R.id.search);
-        apiOutput = v.findViewById(R.id.apiText);
+        btn_searchRecipe.setOnClickListener(view-> {
+            startActivity(new Intent(getActivity(),RecipeSearchActivity.class));
+        });
 
 
         return v;
-
     }
 }

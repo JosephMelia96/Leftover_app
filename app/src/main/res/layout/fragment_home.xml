@@ -1,43 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@drawable/home_background">
 
-    <LinearLayout
-        android:id="@+id/searchLL"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:src="@drawable/ic_search" />
-
-        <EditText
-            android:id="@+id/search"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,"
-            android:hint="Search" />
-
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/apiText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/searchLL"
-        android:text="TEST API OUTPUT"
-        android:layout_centerHorizontal="true"/>
 
     <GridLayout
+        android:id="@+id/mGL"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/apiText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="23dp"
         android:columnCount="2"
@@ -93,5 +65,16 @@
             android:src="@drawable/dessert" />
 
     </GridLayout>
+
+    <Button
+        android:id="@+id/btn_searchRecipes"
+        android:layout_below="@id/mGL"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_centerHorizontal="true"
+        android:text="Search Recipes"
+        android:textSize="18sp"
+        android:background="@drawable/btn_rounded"/>
 
 </RelativeLayout>
