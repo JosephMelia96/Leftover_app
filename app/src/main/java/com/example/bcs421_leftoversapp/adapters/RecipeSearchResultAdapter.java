@@ -32,7 +32,7 @@ public class RecipeSearchResultAdapter extends ArrayAdapter<RecipePreview> {
         ImageView itemThumb = convertView.findViewById(R.id.searchThumb);
         RecipePreview recipe = getItem(position);
         itemTitle.setText(recipe.getTitle());
-        Glide.with(convertView).load(String.valueOf(recipe.getThumbnail())).placeholder(R.mipmap.ic_launcher).into(itemThumb);
+        Glide.with(convertView).load(String.valueOf(recipe.getThumbnail())).placeholder(R.drawable.noimg).into(itemThumb);
         return convertView;
     }
 }
