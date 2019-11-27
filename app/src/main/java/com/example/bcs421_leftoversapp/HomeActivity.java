@@ -78,7 +78,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initViews() {
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         headerView = navigationView.getHeaderView(0);
     }
 

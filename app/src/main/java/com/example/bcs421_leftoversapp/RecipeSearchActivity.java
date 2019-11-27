@@ -41,7 +41,7 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
         setContentView(R.layout.activity_recipe_search);
         initialiseApiClient();
         searchView = findViewById(R.id.searchBar);
-        searchResultList = (ListView) findViewById(R.id.searchResultList);
+        searchResultList = findViewById(R.id.searchResultList);
         adapter = new RecipeSearchResultAdapter(this);
         searchResultList.setAdapter(this.adapter);
         searchView.setOnQueryTextListener(this);
