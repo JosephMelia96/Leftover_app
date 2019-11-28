@@ -5,65 +5,17 @@
     android:padding="16dp">
 
 
-    <GridLayout
+    <GridView
         android:id="@+id/mGL"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="23dp"
-        android:columnCount="2"
-        android:rowCount="2"
-        android:background="@android:color/holo_green_dark">
-
-        <ImageView
-            android:id="@+id/breakfastView"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_row="0"
-            android:layout_column="0"
-            android:paddingTop="5dp"
-            android:paddingBottom="2.5dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="2.5dp"
-            android:src="@drawable/breakfast_n"/>
-
-        <ImageView
-            android:id="@+id/lunchView"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_row="0"
-            android:layout_column="1"
-            android:paddingTop="5dp"
-            android:paddingBottom="2.5dp"
-            android:paddingLeft="2.5dp"
-            android:paddingRight="5dp"
-            android:src="@drawable/lunch_n" />
-
-        <ImageView
-            android:id="@+id/dinnerView"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_row="1"
-            android:layout_column="0"
-            android:paddingTop="2.5dp"
-            android:paddingBottom="5dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="2.5dp"
-            android:src="@drawable/dinner_n" />
-
-        <ImageView
-            android:id="@+id/dessertView"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_row="1"
-            android:layout_column="1"
-            android:paddingTop="2.5dp"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2.5dp"
-            android:paddingRight="5dp"
-            android:src="@drawable/dessert_n" />
-
-    </GridLayout>
+        android:numColumns="2"
+        android:columnWidth="150dp"
+        android:horizontalSpacing="5dp"
+        android:verticalSpacing="5dp"
+        android:stretchMode="spacingWidthUniform"/>
 
     <Button
         android:id="@+id/btn_searchRecipes"
