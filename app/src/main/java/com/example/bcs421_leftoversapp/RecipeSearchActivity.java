@@ -1,7 +1,11 @@
 package com.example.bcs421_leftoversapp;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -49,6 +53,16 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
         // Debounce searches by 300ms to prevent lots of API requests in quick succession
         onSearchTextChanged = searchTextSubject.debounce(300, TimeUnit.MILLISECONDS);
         subscribeToSearchTextChanges();
+
+        searchResultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //Toast.makeText(RecipeSearchActivity.this, "You Choose: " + adapter.getItem(i).getIngredients(), Toast.LENGTH_SHORT).show();
+                Intent ex = new Intent(RecipeSearchActivity.this, ShowRecipie.class);
+                ex.putExtra("ingr", adapter.getItem(i).getIngredients());
+                startActivity(ex);
+            }
+        });
     }
 
     private void initialiseApiClient() {
