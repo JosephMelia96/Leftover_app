@@ -2,10 +2,10 @@ package com.example.bcs421_leftoversapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -14,12 +14,12 @@ import com.example.bcs421_leftoversapp.adapters.RecipeSearchResultAdapter;
 import com.example.bcs421_leftoversapp.service.recipe.RecipeService;
 import com.example.bcs421_leftoversapp.service.recipe.recipepuppy.RecipePuppyService;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
@@ -30,7 +30,7 @@ import io.reactivex.subjects.Subject;
  */
 public class RecipeSearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    private final int MAX_RECIPES_TO_SHOW = 25;
+    private final int MAX_RECIPES_TO_SHOW = 100;
 
     private RecipeService recipeService;
     private RecipeSearchResultAdapter adapter;
@@ -85,12 +85,22 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
     }
 
     private void subscribeToSearchTextChanges() {
+
         onSearchTextChanged.subscribe(text -> recipeService.searchRecipes(text, MAX_RECIPES_TO_SHOW)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(recipes -> {
                     adapter.clear();
                     adapter.addAll(recipes);
+                    for (int i = adapter.getCount()-1; i >= 0 ; i--) {
+//                        Log.d("adapterCount_i", "i: " + i);
+//                        Log.d("count", "count: " + adapter.getCount());
+
+                        if(String.valueOf(adapter.getItem(i).getThumbnail()).equals("")) {
+                            adapter.remove(adapter.getItem(i));
+//                            Log.d("msg", "Removed Recipe: " + adapter.getItem(i));
+                        }
+                    }
                 })
                 .subscribe());
     }
