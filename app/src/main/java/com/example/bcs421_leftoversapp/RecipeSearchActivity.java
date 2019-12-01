@@ -55,6 +55,9 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
         searchTextSubject = BehaviorSubject.create();
         // Debounce searches by 300ms to prevent lots of API requests in quick succession
         onSearchTextChanged = searchTextSubject.debounce(300, TimeUnit.MILLISECONDS);
+
+        //if intent key value is not null then set query to passed value and run query
+        //will automatically load which ever category was pressed
         if (getIntent().getStringExtra("category") != null) {
             searchView.setQuery(getIntent().getStringExtra("category"),false);
         }

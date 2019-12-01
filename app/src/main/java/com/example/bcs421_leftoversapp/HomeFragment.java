@@ -25,6 +25,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
 
         btn_searchRecipe = v.findViewById(R.id.btn_searchRecipes);
+
+        //set on click listeners to all image view
         v.findViewById(R.id.breakfastView).setOnClickListener(this);
         v.findViewById(R.id.lunchView).setOnClickListener(this);
         v.findViewById(R.id.dinnerView).setOnClickListener(this);
@@ -38,13 +40,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return v;
     }
 
+    //process onClick event
     @Override
     public void onClick(View v) {
+        //create intent object to pass clicked image value to next activity
         Intent intent = new Intent(getActivity(),RecipeSearchActivity.class);
+
+        //switch will get id of clicked image and run on corresponding case
         switch (v.getId()) {
             case R.id.breakfastView:
-                intent.putExtra("category", "breakfast");
-                startActivity(intent);
+                intent.putExtra("category", "breakfast"); //add image value to intent
+                startActivity(intent); //start new activity
                 break;
             case R.id.lunchView:
                 intent.putExtra("category", "lunch");
