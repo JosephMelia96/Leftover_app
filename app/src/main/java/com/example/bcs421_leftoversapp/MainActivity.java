@@ -6,8 +6,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -15,8 +28,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private LoginButton loginButton;
+    private CallbackManager callbackManager;
     int RC_SIGN_IN = 0;
     GoogleSignInClient mGoogleSignInClient;
 
@@ -25,6 +47,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViewById(R.id.signInButton).setOnClickListener(this);
+        loginButton = findViewById(R.id.Login_button);
+        callbackManager = CallbackManager.Factory.create();
+        loginButton.setReadPermissions(Arrays.asList("email","public_profile"));
+        checkLoginStatus();
+
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
+
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -36,7 +80,67 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
+
+    AccessTokenTracker tokenTracker = new AccessTokenTracker(){
+        @Override
+        protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+            if(currentAccessToken==null){
+                Toast.makeText(MainActivity.this,"User Logged out",Toast.LENGTH_LONG).show();
+            }
+            else
+                loadUserProfile(currentAccessToken);
+        }
+
+
+    };
+
+    private void loadUserProfile(AccessToken newAccessToken){
+        GraphRequest request = GraphRequest.newMeRequest(newAccessToken, new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+
+                try {
+                    String first_name = object.getString("first_name");
+                    String last_name = object.getString("last_name");
+                    String email = object.getString("email");
+                    String id = object.getString("id");
+
+                    String image_url = "https://graph.facebook.com/"+id+"/picture?type=normal";
+
+//                    txtEmail.setText(email);
+//                    txtName.setText(first_name + " " + last_name);
+                    RequestOptions requestOptions = new RequestOptions();
+                    requestOptions.dontAnimate();
+
+                   // Glide.with(MainActivity.this).load(image_url).into(circleImageView);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields","first_name,last_name,email,id");
+        request.setParameters(parameters);
+        request.executeAsync();
+
+    }
+
+
+    private void checkLoginStatus(){
+        if(AccessToken.getCurrentAccessToken()!=null){
+            Intent i = new Intent(this,HomeActivity.class);
+            startActivity(i);
+            loadUserProfile(AccessToken.getCurrentAccessToken());
+
+        }
+    }
+
+
+
+        @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.signInButton:
