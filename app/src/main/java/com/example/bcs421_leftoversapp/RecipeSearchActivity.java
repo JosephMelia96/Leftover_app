@@ -1,10 +1,12 @@
 package com.example.bcs421_leftoversapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,7 +32,7 @@ import io.reactivex.subjects.Subject;
  */
 public class RecipeSearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    private final int MAX_RECIPES_TO_SHOW = 100;
+    private final int MAX_RECIPES_TO_SHOW = 20;
 
     private RecipeService recipeService;
     private RecipeSearchResultAdapter adapter;
@@ -38,6 +40,7 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
     private ListView searchResultList;
     private Subject<String> searchTextSubject;
     private Observable<String> onSearchTextChanged;
+    private ImageView breakfast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +55,11 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
         searchTextSubject = BehaviorSubject.create();
         // Debounce searches by 300ms to prevent lots of API requests in quick succession
         onSearchTextChanged = searchTextSubject.debounce(300, TimeUnit.MILLISECONDS);
+        if (getIntent().getStringExtra("category") != null) {
+            searchView.setQuery(getIntent().getStringExtra("category"),false);
+        }
         subscribeToSearchTextChanges();
+
 
         searchResultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -64,6 +71,7 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
             }
         });
     }
+
 
     private void initialiseApiClient() {
         this.recipeService = new RecipePuppyService();
@@ -84,7 +92,8 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
         return true;
     }
 
-    private void subscribeToSearchTextChanges() {
+
+    public void subscribeToSearchTextChanges() {
 
         onSearchTextChanged.subscribe(text -> recipeService.searchRecipes(text, MAX_RECIPES_TO_SHOW)
                 .subscribeOn(Schedulers.io())
@@ -92,17 +101,16 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
                 .doOnNext(recipes -> {
                     adapter.clear();
                     adapter.addAll(recipes);
-                    for (int i = adapter.getCount()-1; i >= 0 ; i--) {
-//                        Log.d("adapterCount_i", "i: " + i);
-//                        Log.d("count", "count: " + adapter.getCount());
+                    //check adapter list and remove recipes without thumbnails
+                    for (int i = adapter.getCount()-1; i >= 0 ; i--) { //
 
                         if(String.valueOf(adapter.getItem(i).getThumbnail()).equals("")) {
                             adapter.remove(adapter.getItem(i));
-//                            Log.d("msg", "Removed Recipe: " + adapter.getItem(i));
                         }
                     }
                 })
                 .subscribe());
+
     }
 
 }
