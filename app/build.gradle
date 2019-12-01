@@ -35,9 +35,16 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation("com.squareup.okhttp3:okhttp:4.2.1")
-    implementation 'com.squareup.retrofit2:converter-gson:2.4.0';
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.squareup.retrofit2:retrofit:2.6.2'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.2'
     implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.2'
 
+    // These are the dependencies for facebook, I know some of them are repeated
+    implementation 'com.facebook.android:facebook-login:5.11.2'
+
+    implementation 'de.hdodenhof:circleimageview:3.0.1'
+
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
 }
