@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     int RC_SIGN_IN = 0;
     GoogleSignInClient mGoogleSignInClient;
+    Intent facebookIntent;
 
     // FaceBook Login Button
     private LoginButton loginButton;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViewById(R.id.signInButton).setOnClickListener(this);
+        facebookIntent = new Intent(this,HomeActivity.class);
 
         // Setting the login button for facebook
         loginButton = findViewById(R.id.Login_button);
@@ -59,17 +61,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-
+                startActivity(facebookIntent);
             }
 
             @Override
             public void onCancel() {
-
+                Toast.makeText(MainActivity.this, "Facebook Login Canceled", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException error) {
-
+                Toast.makeText(MainActivity.this, "Facebook Login Failed", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -145,14 +147,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onCompleted(JSONObject object, GraphResponse response) {
 
                 try {
-                    String first_name = object.getString("first_name");
-                    String last_name = object.getString("last_name");
-                    String email = object.getString("email");
                     String id = object.getString("id");
+                    String name = object.getString("first_name") + " " + object.getString("last_name");
+                    //pass facebook user info into intent
+                    facebookIntent.putExtra("name",name);
+                    facebookIntent.putExtra("email",object.getString("email"));
+                    facebookIntent.putExtra("image_url","https://graph.facebook.com/"+id+"/picture?type=normal");
 
-                    String image_url = "https://graph.facebook.com/"+id+"/picture?type=normal";
 
-                  //  txtEmail.setText(email);
+                    //  txtEmail.setText(email);
                     //txtName.setText(first_name + " " + last_name);
                     RequestOptions requestOptions = new RequestOptions();
                     requestOptions.dontAnimate();
@@ -176,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void checkLoginStatus(){
         if(AccessToken.getCurrentAccessToken()!=null){
             loadUserProfile(AccessToken.getCurrentAccessToken());
+            startActivity(facebookIntent);
         }
     }
 

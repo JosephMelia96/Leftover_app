@@ -42,9 +42,7 @@ dependencies {
 
     // Comments r 4 looserz
     implementation 'com.facebook.android:facebook-login:5.11.2'
-
     implementation 'de.hdodenhof:circleimageview:3.0.1'
-
     implementation 'com.github.bumptech.glide:glide:4.10.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
 }
