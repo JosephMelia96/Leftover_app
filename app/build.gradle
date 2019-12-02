@@ -39,4 +39,10 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.6.2'
     implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.2'
+
+    // Comments r 4 looserz
+    implementation 'com.facebook.android:facebook-login:5.11.2'
+    implementation 'de.hdodenhof:circleimageview:3.0.1'
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
 }

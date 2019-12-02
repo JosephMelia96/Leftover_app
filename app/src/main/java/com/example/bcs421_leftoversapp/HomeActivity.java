@@ -29,6 +29,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.Subject;
@@ -92,6 +95,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             nav_username.setText(acct.getDisplayName());
             nav_userEmail.setText(acct.getEmail());
             Glide.with(this).load(String.valueOf(acct.getPhotoUrl())).into(nav_userPicture);
+        } else if (getIntent().getStringExtra("name") != null) {
+            TextView nav_username = headerView.findViewById(R.id.nav_userName); //access item by through navHeader
+            TextView nav_userEmail = headerView.findViewById(R.id.nav_userEmail);
+            ImageView nav_userPicture = headerView.findViewById(R.id.nav_userPicture);
+
+            nav_username.setText(getIntent().getStringExtra("name"));
+            nav_userEmail.setText(getIntent().getStringExtra("email"));
+            Glide.with(this).load(String.valueOf(getIntent().getStringExtra("image_url"))).into(nav_userPicture);
         }
     }
 
