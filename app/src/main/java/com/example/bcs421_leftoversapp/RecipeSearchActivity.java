@@ -70,6 +70,9 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
                 //Toast.makeText(RecipeSearchActivity.this, "You Choose: " + adapter.getItem(i).getIngredients(), Toast.LENGTH_SHORT).show();
                 Intent ex = new Intent(RecipeSearchActivity.this, ShowRecipie.class);
                 ex.putExtra("ingr", adapter.getItem(i).getIngredients());
+                ex.putExtra("img", adapter.getItem(i).getThumbnail());
+                ex.putExtra("title", adapter.getItem(i).getTitle());
+                ex.putExtra("href", adapter.getItem(i).getHref());
                 startActivity(ex);
             }
         });

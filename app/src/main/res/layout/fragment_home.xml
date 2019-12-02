@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorHomeBackground"
     android:padding="16dp">
 
 
@@ -13,7 +14,7 @@
         android:layout_marginTop="23dp"
         android:columnCount="2"
         android:rowCount="2"
-        android:background="@android:color/holo_green_dark">
+        android:background="@color/colorGridBackground">
 
         <ImageView
             android:id="@+id/breakfastView"
@@ -25,7 +26,7 @@
             android:paddingBottom="2.5dp"
             android:paddingLeft="5dp"
             android:paddingRight="2.5dp"
-            android:src="@drawable/breakfast_n"/>
+            android:src="@drawable/breakfastnew_n"/>
 
         <ImageView
             android:id="@+id/lunchView"
@@ -37,7 +38,7 @@
             android:paddingBottom="2.5dp"
             android:paddingLeft="2.5dp"
             android:paddingRight="5dp"
-            android:src="@drawable/lunch_n" />
+            android:src="@drawable/lunchnew_n" />
 
         <ImageView
             android:id="@+id/dinnerView"
@@ -49,7 +50,7 @@
             android:paddingBottom="5dp"
             android:paddingLeft="5dp"
             android:paddingRight="2.5dp"
-            android:src="@drawable/dinner_n" />
+            android:src="@drawable/dinnernew_n" />
 
         <ImageView
             android:id="@+id/dessertView"
@@ -61,7 +62,7 @@
             android:paddingBottom="5dp"
             android:paddingLeft="2.5dp"
             android:paddingRight="5dp"
-            android:src="@drawable/dessert_n" />
+            android:src="@drawable/dessertnew_n" />
 
     </GridLayout>
 
