@@ -11,6 +11,9 @@ import android.util.Log;
 import com.example.bcs421_leftoversapp.models.Recipe;
 import com.example.bcs421_leftoversapp.models.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class RecipesContract {
 
     // Database fields
@@ -72,13 +75,30 @@ public final class RecipesContract {
         Cursor cursor = mDb.query(RecipesEntry.TABLE_NAME, mAllColumns, RecipesEntry._ID +
                 " = " + insertId,null, null, null, null);
         cursor.moveToFirst();
-        Recipe newRecipe = cursorToChild(cursor);
+        Recipe newRecipe = cursorToRecipe(cursor);
         cursor.close();
         return newRecipe;
     }
 
+    //used to list all recipes of User
+    public List<Recipe> getRecipesOfUser(long userId) {
+        List<Recipe> listRecipe = new ArrayList<Recipe>();
+
+        Cursor cursor = mDb.query(RecipesEntry.TABLE_NAME, mAllColumns, RecipesEntry.COL_USER_ID + " = ?",
+                new String[] {String.valueOf(userId) }, null, null, null);
+
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            Recipe recipe = cursorToRecipe(cursor);
+            listRecipe.add(recipe);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return listRecipe;
+    }
+
     //used to set data to specific recipe object
-    private Recipe cursorToChild(Cursor cursor) {
+    private Recipe cursorToRecipe(Cursor cursor) {
         Recipe recipe = new Recipe();
         recipe.setId(cursor.getLong(0));
         recipe.setTitle(cursor.getString(1));
