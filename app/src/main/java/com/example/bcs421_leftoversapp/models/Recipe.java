@@ -1,6 +1,6 @@
 package com.example.bcs421_leftoversapp.models;
 
-public class SaveRecipe {
+public class Recipe {
     private long mId;
     private String mTitle;
     private String mIngredients;
@@ -9,10 +9,10 @@ public class SaveRecipe {
     private User user;
 
     //default constructor
-    public SaveRecipe(){ };
+    public Recipe(){ };
 
     //parameter constructor
-    public SaveRecipe(String mTitle, String mIngredients, String mThumbnail, String mHref) {
+    public Recipe(String mTitle, String mIngredients, String mThumbnail, String mHref) {
         this.mTitle = mTitle;
         this.mIngredients = mIngredients;
         this.mThumbnail = mThumbnail;
