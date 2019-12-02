@@ -13,7 +13,7 @@ import com.example.bcs421_leftoversapp.models.User;
 import java.util.Objects;
 
 
-public class UsersContract {
+public final class UsersContract {
 
     private SQLiteDatabase mDb;
     private DbHelper mDbHelper;
