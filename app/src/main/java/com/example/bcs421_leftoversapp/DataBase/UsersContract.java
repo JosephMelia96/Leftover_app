@@ -68,6 +68,18 @@ public class UsersContract {
         return newParent;
     }
 
+    //return parent by searching by id
+    public User getParentById(long id) {
+        Cursor cursor = mDb.query(UsersEntry.TABLE_NAME, mAllColumns, UsersEntry._ID + " = ?",
+                new String[] {String.valueOf(id) }, null,null,null);
+        if(cursor != null) {
+            cursor.moveToFirst();
+        }
+
+        User user = cursorToParent(cursor);
+        return user;
+    }
+
     //return parent by searching by email
     public User getParentIdByEmail(String email) {
         Cursor cursor = mDb.query(UsersEntry.TABLE_NAME, mAllColumns, UsersEntry.COL_EMAIL + " = ?",

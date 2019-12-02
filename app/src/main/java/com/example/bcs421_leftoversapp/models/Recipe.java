@@ -19,6 +19,14 @@ public class Recipe {
         this.mHref = mHref;
     }
 
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(long mId) {
+        this.mId = mId;
+    }
+
     public String getTitle() {
         return mTitle;
     }
