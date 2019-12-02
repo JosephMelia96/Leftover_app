@@ -1,4 +1,7 @@
 package com.example.bcs421_leftoversapp.DataBase;
 
-public class SaveRecipeContract {
+public final class SaveRecipeContract {
+
+    
+
 }
