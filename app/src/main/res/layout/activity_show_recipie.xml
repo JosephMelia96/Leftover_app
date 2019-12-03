@@ -25,6 +25,15 @@
         android:layout_marginRight="20dp"
         android:background="@drawable/ic_share"/>
 
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_toLeftOf="@+id/btn_share"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/ic_bookmark"/>
+
+
     <TextView
         android:id="@+id/ingredients"
         android:layout_width="wrap_content"
@@ -42,6 +51,7 @@
         android:layout_marginBottom="20dp"
         android:text="@string/viewRecipe"
         android:onClick="recipeSite"/>
+
 
     <ImageView
         android:id="@+id/img"

@@ -64,7 +64,7 @@ public final class RecipesContract {
     }
 
     //used to add recipe into database
-    public Recipe createChild(String title, String ingredients, String thumbnail, String href, long userId) {
+    public Recipe addRecipe(String title, String ingredients, String thumbnail, String href, long userId) {
         ContentValues cv = new ContentValues();
         cv.put(RecipesEntry.COL_TITLE,title);
         cv.put(RecipesEntry.COL_INGREDIENTS,ingredients);
