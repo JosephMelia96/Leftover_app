@@ -36,6 +36,8 @@ import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 
 
+import java.util.List;
+
 import io.reactivex.Observable;
 import io.reactivex.subjects.Subject;
 
@@ -94,6 +96,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mUsersContract.createUser(email);
     }
 
+
     //update labels in nav header with user info
     private void showUserInfo(GoogleSignInAccount acct) {
 
@@ -108,19 +111,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             this.mUsersContract = new UsersContract(this); //initialize UsersContract
             String email = acct.getEmail();
-
-            if (!mUsersContract.checkForEmptyTable()) {
-                Log.d("TABLE","Table is not empty");
-
-                if(!mUsersContract.checkForExistingUser(email)) {
-                    Log.d("EMAIL","Email already exists");
-                } else
-                    Log.d("EMAIL","Email does not exist");
-
-            } else if(mUsersContract.checkForEmptyTable()) {
-                Log.d("TABLE","Table is empty");
-
+            if(mUsersContract.checkForExistingUser(email))
+                Log.d("EMAIL","Email exists");
+            else {
+                createUserInDatabase(email);
+                Log.d("EMAIL", "Email does not exist");
             }
+
+
+
         } else if (getIntent().getStringExtra("name") != null) {
             TextView nav_username = headerView.findViewById(R.id.nav_userName); //access item by through navHeader
             TextView nav_userEmail = headerView.findViewById(R.id.nav_userEmail);
@@ -132,17 +131,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             this.mUsersContract = new UsersContract(this); //initialize UsersContract
             String email = getIntent().getStringExtra("email");
-
-            if (mUsersContract.checkForEmptyTable()) {
-                Log.d("TABLE","Table is empty");
-
-                if(!mUsersContract.checkForExistingUser(email)) {
-                    Log.d("EMAIL","Email already exists");
-                }
-            } else if(!mUsersContract.checkForEmptyTable()) {
-                Log.d("TABLE","Table is not empty");
-
+            if(mUsersContract.checkForExistingUser(email))
+                Log.d("EMAIL","Email exists");
+            else {
+                createUserInDatabase(email);
+                Log.d("EMAIL", "Email does not exist");
             }
+
         }
     }
 

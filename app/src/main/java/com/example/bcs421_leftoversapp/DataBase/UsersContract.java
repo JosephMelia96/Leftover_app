@@ -8,8 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.example.bcs421_leftoversapp.models.Recipe;
 import com.example.bcs421_leftoversapp.models.User;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -62,7 +65,7 @@ public final class UsersContract {
         Cursor cursor = mDb.query(UsersEntry.TABLE_NAME, mAllColumns, UsersEntry._ID +
                 " = " + insertId, null, null, null, null);
         cursor.moveToFirst();
-        User newParent = cursorToParent(cursor);
+        User newParent = cursorToUser(cursor);
         cursor.close();
         mDb.close();
         return newParent;
@@ -76,7 +79,7 @@ public final class UsersContract {
             cursor.moveToFirst();
         }
 
-        User user = cursorToParent(cursor);
+        User user = cursorToUser(cursor);
         return user;
     }
 
@@ -88,7 +91,7 @@ public final class UsersContract {
             cursor.moveToFirst();
         }
 
-        User user = cursorToParent(cursor);
+        User user = cursorToUser(cursor);
         mDb.close();
         return user;
     }
@@ -108,23 +111,25 @@ public final class UsersContract {
     }
 
     //check for existing user table
-    public boolean checkForExistingUser(String userEmail) {
-        mDb = mDbHelper.getWritableDatabase();
-        String email = "SELECT * FROM " + UsersEntry.TABLE_NAME;
-        Cursor cursor = mDb.rawQuery(email,null);
+    public boolean checkForExistingUser(String email) {
+        String emailUser = "";
+        Cursor cursor = mDb.query(UsersEntry.TABLE_NAME, mAllColumns, UsersEntry.COL_EMAIL + " = ?",
+                new String[] {String.valueOf(email) }, null, null, null);
+
         cursor.moveToFirst();
-        mDb.close();
-        for (int i=0; i < cursor.getCount(); i++) {
-            if (cursor.getString(i).equals(userEmail))
-                return true;
-            else
-                return false;
+        while(!cursor.isAfterLast()) {
+            User user = cursorToUser(cursor);
+            emailUser = user.getEmail();
+            cursor.moveToNext();
         }
-        return false;
+        if (emailUser.equals(email))
+            return true;
+        else
+            return false;
     }
 
     //set data to specific user object
-    protected User cursorToParent(Cursor cursor) {
+    protected User cursorToUser(Cursor cursor) {
         User user = new User();
         user.setID(cursor.getLong(0));
         user.setEmail(cursor.getString(1));
