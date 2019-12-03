@@ -81,8 +81,8 @@ public final class RecipesContract {
     }
 
     //used to list all recipes of User
-    public List<Recipe> getRecipesOfUser(long userId) {
-        List<Recipe> listRecipe = new ArrayList<Recipe>();
+    public ArrayList<Recipe> getRecipesOfUser(long userId) {
+        ArrayList<Recipe> listRecipe = new ArrayList<Recipe>();
 
         Cursor cursor = mDb.query(RecipesEntry.TABLE_NAME, mAllColumns, RecipesEntry.COL_USER_ID + " = ?",
                 new String[] {String.valueOf(userId) }, null, null, null);

@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,7 +23,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
-import java.util.List;
+import java.util.ArrayList;
 
 
 public class SavedRecipesFragment extends Fragment {
@@ -59,20 +58,23 @@ public class SavedRecipesFragment extends Fragment {
         mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getActivity());
         User user = mUserContract.getParentIdByEmail(acct.getEmail());
-        List<Recipe> savedRecipeList = mRecipeContract.getRecipesOfUser(user.getID());
-        Toast.makeText(getActivity(),"Works",Toast.LENGTH_SHORT).show();
+        // get list of saved recipes for user
+        ArrayList<Recipe> savedRecipeList = mRecipeContract.getRecipesOfUser(user.getID());
+        // convert each recipe in ArrayList to recipePreview object
         for (int i=0; i < savedRecipeList.size(); i++) {
+            // use the RecipePreview constructor to create new Preview objects
             this.mRecipePreview = new RecipePreview(savedRecipeList.get(i).getTitle(),
                     savedRecipeList.get(i).getHref(),savedRecipeList.get(i).getIngredients(),
                     savedRecipeList.get(i).getThumbnail());
-            adapter.add(mRecipePreview);
+            adapter.add(mRecipePreview); //add the recipePreview object to adapter
         }
 
+        //launch showRecipeActivity when list item is clicked
         savedRecipeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 //Toast.makeText(RecipeSearchActivity.this, "You Choose: " + adapter.getItem(i).getIngredients(), Toast.LENGTH_SHORT).show();
-                Intent ex = new Intent(getActivity(), ShowRecipie.class);
+                Intent ex = new Intent(getActivity(), ShowRecipe.class);
                 ex.putExtra("ingr", adapter.getItem(i).getIngredients());
                 ex.putExtra("img", adapter.getItem(i).getThumbnail());
                 ex.putExtra("title", adapter.getItem(i).getTitle());
@@ -81,16 +83,8 @@ public class SavedRecipesFragment extends Fragment {
             }
         });
 
-        //check adapter list and remove recipes without thumbnails
-//        for (int i = adapter.getCount()-1; i >= 0 ; i--) { //
-//            String title = adapter.getItem(i).getTitle();
-//            for (int j=0 ; j < adapter.getCount();j++) {
-//                if (adapter.getItem(j).getTitle().equals(title)) {
-//                    adapter.remove(adapter.getItem(j));
-//                }
-//            }
-//        }
 
         return v;
     }
+
 }

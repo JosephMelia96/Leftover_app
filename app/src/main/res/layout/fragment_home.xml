@@ -70,7 +70,7 @@
         android:layout_below="@id/mGL"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         android:layout_centerHorizontal="true"
         android:text="Search Recipes"
         android:textSize="18sp"

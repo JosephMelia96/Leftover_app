@@ -1,9 +1,7 @@
 package com.example.bcs421_leftoversapp;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -16,9 +14,7 @@ import com.example.bcs421_leftoversapp.adapters.RecipeSearchResultAdapter;
 import com.example.bcs421_leftoversapp.service.recipe.RecipeService;
 import com.example.bcs421_leftoversapp.service.recipe.recipepuppy.RecipePuppyService;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -64,17 +60,14 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
         subscribeToSearchTextChanges();
 
 
-        searchResultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //Toast.makeText(RecipeSearchActivity.this, "You Choose: " + adapter.getItem(i).getIngredients(), Toast.LENGTH_SHORT).show();
-                Intent ex = new Intent(RecipeSearchActivity.this, ShowRecipie.class);
-                ex.putExtra("ingr", adapter.getItem(i).getIngredients());
-                ex.putExtra("img", adapter.getItem(i).getThumbnail());
-                ex.putExtra("title", adapter.getItem(i).getTitle());
-                ex.putExtra("href", adapter.getItem(i).getHref());
-                startActivity(ex);
-            }
+        searchResultList.setOnItemClickListener((adapterView, view, i, l) -> {
+            //Toast.makeText(RecipeSearchActivity.this, "You Choose: " + adapter.getItem(i).getIngredients(), Toast.LENGTH_SHORT).show();
+            Intent ex = new Intent(RecipeSearchActivity.this, ShowRecipe.class);
+            ex.putExtra("ingr", adapter.getItem(i).getIngredients());
+            ex.putExtra("img", adapter.getItem(i).getThumbnail());
+            ex.putExtra("title", adapter.getItem(i).getTitle());
+            ex.putExtra("href", adapter.getItem(i).getHref());
+            startActivity(ex);
         });
     }
 

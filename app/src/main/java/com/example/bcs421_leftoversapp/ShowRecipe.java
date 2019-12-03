@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,13 +15,16 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.bcs421_leftoversapp.DataBase.RecipesContract;
 import com.example.bcs421_leftoversapp.DataBase.UsersContract;
+import com.example.bcs421_leftoversapp.models.Recipe;
 import com.example.bcs421_leftoversapp.models.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
-public class ShowRecipie extends AppCompatActivity implements View.OnClickListener {
+import java.util.ArrayList;
+
+public class ShowRecipe extends AppCompatActivity implements View.OnClickListener {
 
     TextView ingredients, title;
     ImageView img;
@@ -37,6 +41,7 @@ public class ShowRecipie extends AppCompatActivity implements View.OnClickListen
         img = findViewById(R.id.img);
         findViewById(R.id.btn_share).setOnClickListener(this);
         findViewById(R.id.btn_save).setOnClickListener(this);
+        findViewById(R.id.btn_home).setOnClickListener(this);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -78,6 +83,8 @@ public class ShowRecipie extends AppCompatActivity implements View.OnClickListen
             case R.id.btn_save:
                 saveRecipeIntoDatabase();
                 break;
+            case R.id.btn_home:
+                startActivity(new Intent(this,HomeActivity.class));
         }
     }
 
@@ -87,10 +94,28 @@ public class ShowRecipie extends AppCompatActivity implements View.OnClickListen
         this.mRecipesContract = new RecipesContract(this); //initialize RecipesContract
         User user = mUsersContract.getParentIdByEmail(acct.getEmail());
 
-        mRecipesContract.addRecipe(getIntent().getStringExtra("title"),getIntent().getStringExtra("ingr"),
-                getIntent().getStringExtra("img"),getIntent().getStringExtra("href"),user.getID());
+        if (!checkForSavedRecipe(user,getIntent().getStringExtra("title"))) {
+            mRecipesContract.addRecipe(getIntent().getStringExtra("title"),getIntent().getStringExtra("ingr"),
+                    getIntent().getStringExtra("img"),getIntent().getStringExtra("href"),user.getID());
 
-        Toast.makeText(this, "Recipe Saved", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Recipe Saved", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //check if recipe is saved for user...won't save recipe to prevent duplicates
+    public boolean checkForSavedRecipe(User user, String title) {
+        this.mRecipesContract = new RecipesContract(this); //initialize RecipesContract
+        ArrayList<Recipe> savedRecipeList = mRecipesContract.getRecipesOfUser(user.getID());
+
+        for (int i=0;i<savedRecipeList.size();i++) {
+
+            if(savedRecipeList.get(i).getTitle().equals(title)) {
+                Toast.makeText(this, "Recipe Already Saved", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
