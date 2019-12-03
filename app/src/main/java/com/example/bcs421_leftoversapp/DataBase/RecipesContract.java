@@ -117,7 +117,13 @@ public final class RecipesContract {
     }
 
 
-
+    public void removeSavedRecipe(long id){
+        mDb = mDbHelper.getWritableDatabase();
+        String dlQuery = "DELETE FROM " + RecipesEntry.TABLE_NAME + " WHERE " + RecipesEntry._ID + " = " + id;
+        Cursor cursor = mDb.rawQuery(dlQuery, null);
+        cursor.moveToFirst();
+        //mDb.close();
+    }
 
 
 
