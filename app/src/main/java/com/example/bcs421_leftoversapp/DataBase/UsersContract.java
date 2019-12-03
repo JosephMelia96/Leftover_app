@@ -107,6 +107,22 @@ public final class UsersContract {
             return true;
     }
 
+    //check for existing user table
+    public boolean checkForExistingUser(String userEmail) {
+        mDb = mDbHelper.getWritableDatabase();
+        String email = "SELECT * FROM " + UsersEntry.TABLE_NAME;
+        Cursor cursor = mDb.rawQuery(email,null);
+        cursor.moveToFirst();
+        mDb.close();
+        for (int i=0; i < cursor.getCount(); i++) {
+            if (cursor.getString(i).equals(userEmail))
+                return true;
+            else
+                return false;
+        }
+        return false;
+    }
+
     //set data to specific user object
     protected User cursorToParent(Cursor cursor) {
         User user = new User();

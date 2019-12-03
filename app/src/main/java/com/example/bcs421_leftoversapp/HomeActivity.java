@@ -11,6 +11,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -20,7 +21,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.bcs421_leftoversapp.DataBase.UsersContract;
 import com.example.bcs421_leftoversapp.adapters.RecipeSearchResultAdapter;
+import com.example.bcs421_leftoversapp.models.User;
 import com.example.bcs421_leftoversapp.service.recipe.RecipeService;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -42,6 +45,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     NavigationView navigationView;
     View headerView;
     GoogleSignInClient mGoogleSignInClient;
+    UsersContract mUsersContract;
 
 
     @Override
@@ -62,6 +66,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(toolbar);
 
         drawerLayout = findViewById(R.id.drawer_layout);
+
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -85,8 +90,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         headerView = navigationView.getHeaderView(0);
     }
 
+    private void createUserInDatabase(String email) {
+        mUsersContract.createUser(email);
+    }
+
     //update labels in nav header with user info
     private void showUserInfo(GoogleSignInAccount acct) {
+
         if (acct != null) {
             TextView nav_username = headerView.findViewById(R.id.nav_userName); //access item by through navHeader
             TextView nav_userEmail = headerView.findViewById(R.id.nav_userEmail);
@@ -95,6 +105,22 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             nav_username.setText(acct.getDisplayName());
             nav_userEmail.setText(acct.getEmail());
             Glide.with(this).load(String.valueOf(acct.getPhotoUrl())).into(nav_userPicture);
+
+            this.mUsersContract = new UsersContract(this); //initialize UsersContract
+            String email = acct.getEmail();
+
+            if (!mUsersContract.checkForEmptyTable()) {
+                Log.d("TABLE","Table is not empty");
+
+                if(!mUsersContract.checkForExistingUser(email)) {
+                    Log.d("EMAIL","Email already exists");
+                } else
+                    Log.d("EMAIL","Email does not exist");
+
+            } else if(mUsersContract.checkForEmptyTable()) {
+                Log.d("TABLE","Table is empty");
+
+            }
         } else if (getIntent().getStringExtra("name") != null) {
             TextView nav_username = headerView.findViewById(R.id.nav_userName); //access item by through navHeader
             TextView nav_userEmail = headerView.findViewById(R.id.nav_userEmail);
@@ -103,6 +129,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             nav_username.setText(getIntent().getStringExtra("name"));
             nav_userEmail.setText(getIntent().getStringExtra("email"));
             Glide.with(this).load(String.valueOf(getIntent().getStringExtra("image_url"))).into(nav_userPicture);
+
+            this.mUsersContract = new UsersContract(this); //initialize UsersContract
+            String email = getIntent().getStringExtra("email");
+
+            if (mUsersContract.checkForEmptyTable()) {
+                Log.d("TABLE","Table is empty");
+
+                if(!mUsersContract.checkForExistingUser(email)) {
+                    Log.d("EMAIL","Email already exists");
+                }
+            } else if(!mUsersContract.checkForEmptyTable()) {
+                Log.d("TABLE","Table is not empty");
+
+            }
         }
     }
 

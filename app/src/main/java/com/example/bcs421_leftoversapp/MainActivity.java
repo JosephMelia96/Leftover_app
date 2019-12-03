@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.bcs421_leftoversapp.DataBase.UsersContract;
+import com.example.bcs421_leftoversapp.models.User;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -31,12 +33,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     int RC_SIGN_IN = 0;
     GoogleSignInClient mGoogleSignInClient;
     Intent facebookIntent;
+    UsersContract mUsersContract;
 
     // FaceBook Login Button
     private LoginButton loginButton;
@@ -48,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViewById(R.id.signInButton).setOnClickListener(this);
+        this.mUsersContract = new UsersContract(this);
         facebookIntent = new Intent(this,HomeActivity.class);
 
         // Setting the login button for facebook
@@ -87,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+
         switch (v.getId()) {
             case R.id.signInButton:
                 signIn();
@@ -97,6 +103,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void createUserInDatabase(String email) {
+        User newUser = mUsersContract.createUser(email);
     }
 
     @Override
@@ -128,9 +138,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
             if(currentAccessToken==null){
-//                txtName.setText("");
-//                txtEmail.setText("");
-//                circleImageView.setImageResource(0);
                 Toast.makeText(MainActivity.this,"User Logged out",Toast.LENGTH_LONG).show();
             }
             else
@@ -153,16 +160,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     facebookIntent.putExtra("name",name);
                     facebookIntent.putExtra("email",object.getString("email"));
                     facebookIntent.putExtra("image_url","https://graph.facebook.com/"+id+"/picture?type=normal");
-
-
-                    //  txtEmail.setText(email);
-                    //txtName.setText(first_name + " " + last_name);
                     RequestOptions requestOptions = new RequestOptions();
                     requestOptions.dontAnimate();
-
-                    //Glide.with(MainActivity.this).load(image_url).into(circleImageView);
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
