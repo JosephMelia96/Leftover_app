@@ -150,6 +150,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         HomeActivity.this.finish();
                     }
                 });
+        Intent mainScreen = new Intent(HomeActivity.this, MainActivity.class);
+        startActivity(mainScreen);
     }
 
 
