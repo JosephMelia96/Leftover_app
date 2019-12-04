@@ -1,13 +1,16 @@
 package com.example.bcs421_leftoversapp;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +25,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ShowRecipe extends AppCompatActivity implements View.OnClickListener {
 
@@ -31,6 +38,9 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
     GoogleSignInClient mGoogleSignInClient;
     UsersContract mUsersContract;
     RecipesContract mRecipesContract;
+    String currentPhotoPath;
+    static final int REQUEST_TAKE_PHOTO = 1;
+    private Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +51,7 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
         img = findViewById(R.id.img);
         findViewById(R.id.btn_share).setOnClickListener(this);
         findViewById(R.id.btn_save).setOnClickListener(this);
+        findViewById(R.id.btn_cam).setOnClickListener(this);
         findViewById(R.id.btn_home).setOnClickListener(this);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -71,36 +82,74 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_share:
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                String shareSubject = "Check This Delicious Recipe Out!";
-                String shareBody = getIntent().getStringExtra("title") +
-                        "\n\n" + getIntent().getStringExtra("href");
-                intent.putExtra(Intent.EXTRA_SUBJECT,shareSubject);
-                intent.putExtra(Intent.EXTRA_TEXT, shareBody);
-                startActivity(Intent.createChooser(intent,"Share Using"));
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Would you like to share a photo with the recipe?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
                 break;
             case R.id.btn_save:
                 saveRecipeIntoDatabase();
+                break;
+            case R.id.btn_cam:
+                takePhoto();
                 break;
             case R.id.btn_home:
                 startActivity(new Intent(this,HomeActivity.class));
         }
     }
 
-    public void saveRecipeIntoDatabase() {
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-        this.mUsersContract = new UsersContract(this); //initialize UsersContract
-        this.mRecipesContract = new RecipesContract(this); //initialize RecipesContract
-        User user = mUsersContract.getParentIdByEmail(acct.getEmail());
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
 
-        if (!checkForSavedRecipe(user,getIntent().getStringExtra("title"))) {
-            mRecipesContract.addRecipe(getIntent().getStringExtra("title"),getIntent().getStringExtra("ingr"),
-                    getIntent().getStringExtra("img"),getIntent().getStringExtra("href"),user.getID());
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
 
-            Toast.makeText(this, "Recipe Saved", Toast.LENGTH_SHORT).show();
+    //method to take a photo using google camera2 intent
+    private void takePhoto() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                Toast.makeText(this, "Photo didn't save", Toast.LENGTH_SHORT).show();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                imageUri = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent, REQUEST_TAKE_PHOTO);
+            }
         }
     }
+
+    public void saveRecipeIntoDatabase() {
+    GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+    this.mUsersContract = new UsersContract(this); //initialize UsersContract
+    this.mRecipesContract = new RecipesContract(this); //initialize RecipesContract
+    User user = mUsersContract.getParentIdByEmail(acct.getEmail());
+
+    if (!checkForSavedRecipe(user,getIntent().getStringExtra("title"))) {
+        mRecipesContract.addRecipe(getIntent().getStringExtra("title"),getIntent().getStringExtra("ingr"),
+                getIntent().getStringExtra("img"),getIntent().getStringExtra("href"),user.getID());
+
+        Toast.makeText(this, "Recipe Saved", Toast.LENGTH_SHORT).show();
+    }
+}
 
     //check if recipe is saved for user...won't save recipe to prevent duplicates
     public boolean checkForSavedRecipe(User user, String title) {
@@ -114,8 +163,35 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
                 return true;
             }
         }
-
         return false;
     }
 
+    //dialog function to check if user wants to include an image with their recipe share
+    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            String shareSubject = "Check This Delicious Recipe Out!";
+            String shareBody = getIntent().getStringExtra("title") +
+                    "\n\n" + getIntent().getStringExtra("href");
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.setType("image/*");
+                    Uri pictureUri = imageUri;
+                    intent.putExtra(Intent.EXTRA_STREAM, pictureUri);
+                    intent.putExtra(Intent.EXTRA_SUBJECT, shareSubject);
+                    intent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                    startActivity(Intent.createChooser(intent, "Share Using"));
+                    break;
+                case DialogInterface.BUTTON_NEGATIVE:
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_SUBJECT,shareSubject);
+                    intent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                    startActivity(Intent.createChooser(intent,"Share Using"));
+                    break;
+            }
+        }
+    };
 }
