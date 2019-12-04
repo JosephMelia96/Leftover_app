@@ -4,11 +4,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
@@ -41,6 +44,9 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
     String currentPhotoPath;
     static final int REQUEST_TAKE_PHOTO = 1;
     private Uri imageUri;
+    public static boolean isBlankImage;
+    Intent camIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    Intent intent = new Intent(Intent.ACTION_SEND);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,9 +121,8 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
 
     //method to take a photo using google camera2 intent
     private void takePhoto() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
-        if (intent.resolveActivity(getPackageManager()) != null) {
+        if (camIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
             try {
@@ -131,8 +136,16 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
                 imageUri = FileProvider.getUriForFile(this,
                         "com.example.android.fileprovider",
                         photoFile);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, REQUEST_TAKE_PHOTO);
+
+                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.setType("image/*");
+                camIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                camIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                Uri pictureUri = imageUri;
+                intent.putExtra(Intent.EXTRA_STREAM, pictureUri);
+
+                //startActivityForResult(camIntent, REQUEST_TAKE_PHOTO);
             }
         }
     }
@@ -170,20 +183,20 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
     DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            Intent intent = new Intent(Intent.ACTION_SEND);
+            //Intent intent = new Intent(Intent.ACTION_SEND);
             String shareSubject = "Check This Delicious Recipe Out!";
             String shareBody = getIntent().getStringExtra("title") +
                     "\n\n" + getIntent().getStringExtra("href");
             switch (which){
                 case DialogInterface.BUTTON_POSITIVE:
-                    intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    intent.setType("image/*");
-                    Uri pictureUri = imageUri;
-                    intent.putExtra(Intent.EXTRA_STREAM, pictureUri);
                     intent.putExtra(Intent.EXTRA_SUBJECT, shareSubject);
                     intent.putExtra(Intent.EXTRA_TEXT, shareBody);
-                    startActivity(Intent.createChooser(intent, "Share Using"));
+                    Intent intent2 = Intent.createChooser(intent, "Share Using");
+                    Intent[] list = new Intent[2];
+                    takePhoto();
+                    list[0] = intent2;
+                    list[1] = camIntent;
+                    startActivities(list);
                     break;
                 case DialogInterface.BUTTON_NEGATIVE:
                     intent.setType("text/plain");
