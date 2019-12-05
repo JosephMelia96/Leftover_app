@@ -3,9 +3,8 @@
     <color name="colorPrimary">#BB9E7B</color>
     <color name="colorPrimaryDark">#A07C3D</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="colorBackground">#2196F3</color>
-    <color name="colorNavHeader">#40208FF8</color>
-    <color name="colorNavBackground">#E9C1D8E9</color>
+    <color name="colorNavHeader">#40E6C77A</color>
+    <color name="colorNavBackground">#E9EEE7DD</color>
     <color name="colorGridBackground">#A78F63</color>
     <color name="colorHomeBackground">#EFE7D9</color>
 

@@ -9,7 +9,7 @@
         <item
             android:id="@+id/nav_accountSettings"
             android:icon="@drawable/ic_account"
-            android:title="Account" />
+            android:title="Account Information" />
         <item
             android:id="@+id/nav_savedRecipe"
             android:icon="@drawable/ic_bookmark"

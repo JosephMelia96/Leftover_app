@@ -66,16 +66,28 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 transaction.commit();
                 break;
             case R.id.lunchView:
-                intent.putExtra("category", "lunch");
-                startActivity(intent);
+//                intent.putExtra("category", "lunch");
+//                startActivity(intent);
+                bundle.putString("category","lunch");
+                fragment.setArguments(bundle);
+                transaction.replace(R.id.fragment_container, fragment);
+                transaction.commit();
                 break;
             case R.id.dinnerView:
-                intent.putExtra("category", "dinner");
-                startActivity(intent);
+//                intent.putExtra("category", "dinner");
+//                startActivity(intent);
+                bundle.putString("category","dinner");
+                fragment.setArguments(bundle);
+                transaction.replace(R.id.fragment_container, fragment);
+                transaction.commit();
                 break;
             case R.id.dessertView:
-                intent.putExtra("category", "dessert");
-                startActivity(intent);
+//                intent.putExtra("category", "dessert");
+//                startActivity(intent);
+                bundle.putString("category","dessert");
+                fragment.setArguments(bundle);
+                transaction.replace(R.id.fragment_container, fragment);
+                transaction.commit();
                 break;
             case R.id.btn_searchRecipes:
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
