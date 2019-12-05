@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorHomeBackground"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:id="@+id/recipeSearchLayout">
 
 
     <GridLayout
