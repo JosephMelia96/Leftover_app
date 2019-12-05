@@ -97,6 +97,8 @@ public final class RecipesContract {
         return listRecipe;
     }
 
+
+
     //used to set data to specific recipe object
     private Recipe cursorToRecipe(Cursor cursor) {
         Recipe recipe = new Recipe();

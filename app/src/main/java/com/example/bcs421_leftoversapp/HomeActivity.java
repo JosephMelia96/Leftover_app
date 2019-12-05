@@ -85,6 +85,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             navigationView.setCheckedItem(R.id.nav_home);
         }
+
     }
 
     private void initViews() {
@@ -147,8 +148,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         Toast.makeText(HomeActivity.this, "Sign out successful", Toast.LENGTH_LONG).show();
-                        HomeActivity.this.finish();
                     }
+
                 });
         Intent mainScreen = new Intent(HomeActivity.this, MainActivity.class);
         startActivity(mainScreen);

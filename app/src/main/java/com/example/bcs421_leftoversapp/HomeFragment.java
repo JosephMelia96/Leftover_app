@@ -12,13 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
     Button btn_searchRecipe;
     ImageView breakfast, lunch, dinner, dessert;
+    private FragmentTransaction fragmentTransaction;
+    private FragmentManager fragmentManager;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
@@ -33,7 +36,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         v.findViewById(R.id.dessertView).setOnClickListener(this);
 
         btn_searchRecipe.setOnClickListener(view-> {
-            startActivity(new Intent(getActivity(),RecipeSearchActivity.class));
+            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    new RecipeSearchFragment()).commit();
         });
 
 
@@ -45,12 +49,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         //create intent object to pass clicked image value to next activity
         Intent intent = new Intent(getActivity(),RecipeSearchActivity.class);
+        RecipeSearchFragment fragment = new RecipeSearchFragment();
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        Bundle bundle = new Bundle();
+
 
         //switch will get id of clicked image and run on corresponding case
         switch (v.getId()) {
             case R.id.breakfastView:
-                intent.putExtra("category", "breakfast"); //add image value to intent
-                startActivity(intent); //start new activity
+//                intent.putExtra("category", "breakfast"); //add image value to intent
+//                startActivity(intent); //start new activity
+                bundle.putString("category","breakfast");
+                fragment.setArguments(bundle);
+                transaction.replace(R.id.fragment_container, fragment);
+                transaction.commit();
                 break;
             case R.id.lunchView:
                 intent.putExtra("category", "lunch");
@@ -64,6 +77,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 intent.putExtra("category", "dessert");
                 startActivity(intent);
                 break;
+            case R.id.btn_searchRecipes:
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new RecipeSearchFragment()).commit();
         }
     }
+
+
 }
+
+

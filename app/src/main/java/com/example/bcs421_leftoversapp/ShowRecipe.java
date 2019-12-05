@@ -6,6 +6,7 @@ import androidx.core.content.FileProvider;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -67,8 +68,9 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
         String recImg = getIntent().getStringExtra("img");
         Glide.with(img).load(String.valueOf(recImg)).placeholder(R.drawable.noimg).into(img);
         if(recIngr.indexOf(",") != -1){
-            recIngr = recIngr.replaceAll(",","\n");
+            recIngr = recIngr.replaceAll(",","\n-");
         }
+        recIngr = "- " + recIngr;
         title.setText(recTitle);
         ingredients.setText(recIngr);
     }

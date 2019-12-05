@@ -2,13 +2,17 @@ package com.example.bcs421_leftoversapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ImageView;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.bcs421_leftoversapp.adapters.RecipeSearchResultAdapter;
 import com.example.bcs421_leftoversapp.service.recipe.RecipeService;
@@ -22,11 +26,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
-/**
- * Main application {@link android.app.Activity} which presents the user with a search view,
- * allowing them to find a recipe containing a specific term.
- */
-public class RecipeSearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class RecipeSearchFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     private final int MAX_RECIPES_TO_SHOW = 20;
 
@@ -37,14 +37,16 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
     private Subject<String> searchTextSubject;
     private Observable<String> onSearchTextChanged;
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_recipe_search);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_recipe_search, container, false);
+
         initialiseApiClient();
-        searchView = findViewById(R.id.searchBar);
-        searchResultList = findViewById(R.id.searchResultList);
-        adapter = new RecipeSearchResultAdapter(this);
+        searchView = v.findViewById(R.id.searchBar);
+        searchResultList = v.findViewById(R.id.searchResultList);
+        adapter = new RecipeSearchResultAdapter(getContext());
         searchResultList.setAdapter(this.adapter);
         searchView.setOnQueryTextListener(this);
         searchTextSubject = BehaviorSubject.create();
@@ -53,21 +55,29 @@ public class RecipeSearchActivity extends AppCompatActivity implements SearchVie
 
         //if intent key value is not null then set query to passed value and run query
         //will automatically load which ever category was pressed
-        if (getIntent().getStringExtra("category") != null) {
-            searchView.setQuery(getIntent().getStringExtra("category"),false);
+//        if (getActivity().getIntent().getStringExtra("category") != null) {
+//            searchView.setQuery(getActivity().getIntent().getStringExtra("category"),false);
+//        }
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            searchView.setQuery(bundle.getString("category"),false);
         }
-        subscribeToSearchTextChanges();
 
+        subscribeToSearchTextChanges();
 
         searchResultList.setOnItemClickListener((adapterView, view, i, l) -> {
             //Toast.makeText(RecipeSearchActivity.this, "You Choose: " + adapter.getItem(i).getIngredients(), Toast.LENGTH_SHORT).show();
-            Intent ex = new Intent(RecipeSearchActivity.this, ShowRecipe.class);
+            Intent ex = new Intent(getActivity(), ShowRecipe.class);
             ex.putExtra("ingr", adapter.getItem(i).getIngredients());
             ex.putExtra("img", adapter.getItem(i).getThumbnail());
             ex.putExtra("title", adapter.getItem(i).getTitle());
             ex.putExtra("href", adapter.getItem(i).getHref());
             startActivity(ex);
+
+
         });
+
+        return v;
     }
 
 
