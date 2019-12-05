@@ -74,7 +74,6 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
             ex.putExtra("href", adapter.getItem(i).getHref());
             startActivity(ex);
 
-
         });
 
         return v;
