@@ -3,6 +3,7 @@ package com.example.bcs421_leftoversapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -51,6 +52,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //lock screen to portrait
+
+
         findViewById(R.id.signInButton).setOnClickListener(this);
         this.mUsersContract = new UsersContract(this);
         facebookIntent = new Intent(this,HomeActivity.class);
