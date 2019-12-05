@@ -4,14 +4,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
@@ -43,10 +40,9 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
     RecipesContract mRecipesContract;
     String currentPhotoPath;
     static final int REQUEST_TAKE_PHOTO = 1;
-    private Uri imageUri;
-    public static boolean isBlankImage;
+    public Uri imageUri;
     Intent camIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    Intent intent = new Intent(Intent.ACTION_SEND);
+    final Intent intent = new Intent(Intent.ACTION_SEND);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +53,6 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
         img = findViewById(R.id.img);
         findViewById(R.id.btn_share).setOnClickListener(this);
         findViewById(R.id.btn_save).setOnClickListener(this);
-        findViewById(R.id.btn_cam).setOnClickListener(this);
         findViewById(R.id.btn_home).setOnClickListener(this);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -91,18 +86,17 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("Would you like to share a photo with the recipe?").setPositiveButton("Yes", dialogClickListener)
                         .setNegativeButton("No", dialogClickListener).show();
+                //deletePhoto();
                 break;
             case R.id.btn_save:
                 saveRecipeIntoDatabase();
-                break;
-            case R.id.btn_cam:
-                takePhoto();
                 break;
             case R.id.btn_home:
                 startActivity(new Intent(this,HomeActivity.class));
         }
     }
 
+    //Create a temp file that will hold the image for sharing
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -113,7 +107,6 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
-
         // Save a file: path for use with ACTION_VIEW intents
         currentPhotoPath = image.getAbsolutePath();
         return image;
@@ -136,17 +129,37 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
                 imageUri = FileProvider.getUriForFile(this,
                         "com.example.android.fileprovider",
                         photoFile);
-
-                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.setType("image/*");
                 camIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                camIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                Uri pictureUri = imageUri;
-                intent.putExtra(Intent.EXTRA_STREAM, pictureUri);
-
-                //startActivityForResult(camIntent, REQUEST_TAKE_PHOTO);
+                startActivityForResult(camIntent, REQUEST_TAKE_PHOTO);
             }
+        }
+    }
+    //method to delete shared photo after it's taken
+    private void deletePhoto() {
+        File dir = new File("/sdcard/Android/data/com.example.bcs421_leftoversapp/files/Pictures");
+        if (dir.isDirectory())
+        {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++)
+            {
+                new File(dir, children[i]).delete();
+            }
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        String shareSubject = "Check This Delicious Recipe Out!";
+        String shareBody = getIntent().getStringExtra("title") +
+                "\n\n" + getIntent().getStringExtra("href");
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+            super.onActivityResult(requestCode, resultCode, data);
+            Intent intentInner = new Intent(Intent.ACTION_SEND);
+            intentInner.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra(Intent.EXTRA_STREAM, imageUri).setType("image/*");
+            intentInner.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            intentInner.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intentInner.putExtra(Intent.EXTRA_SUBJECT, shareSubject);
+            intentInner.putExtra(Intent.EXTRA_TEXT, shareBody);
+            startActivity(Intent.createChooser(intentInner, "Share Using"));
         }
     }
 
@@ -170,7 +183,6 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
         ArrayList<Recipe> savedRecipeList = mRecipesContract.getRecipesOfUser(user.getID());
 
         for (int i=0;i<savedRecipeList.size();i++) {
-
             if(savedRecipeList.get(i).getTitle().equals(title)) {
                 Toast.makeText(this, "Recipe Already Saved", Toast.LENGTH_SHORT).show();
                 return true;
@@ -183,20 +195,13 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
     DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            //Intent intent = new Intent(Intent.ACTION_SEND);
             String shareSubject = "Check This Delicious Recipe Out!";
             String shareBody = getIntent().getStringExtra("title") +
                     "\n\n" + getIntent().getStringExtra("href");
             switch (which){
                 case DialogInterface.BUTTON_POSITIVE:
-                    intent.putExtra(Intent.EXTRA_SUBJECT, shareSubject);
-                    intent.putExtra(Intent.EXTRA_TEXT, shareBody);
-                    Intent intent2 = Intent.createChooser(intent, "Share Using");
-                    Intent[] list = new Intent[2];
                     takePhoto();
-                    list[0] = intent2;
-                    list[1] = camIntent;
-                    startActivities(list);
+                    deletePhoto();
                     break;
                 case DialogInterface.BUTTON_NEGATIVE:
                     intent.setType("text/plain");

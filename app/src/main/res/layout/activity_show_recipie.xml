@@ -37,15 +37,6 @@
         android:layout_marginRight="20dp"
         android:background="@drawable/ic_bookmark"/>
 
-    <Button
-        android:id="@+id/btn_cam"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_below="@+id/btn_save"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
-        android:background="@drawable/ic_add_a_photo" />
-
     <ImageView
         android:id="@+id/img"
         android:layout_width="150dp"
