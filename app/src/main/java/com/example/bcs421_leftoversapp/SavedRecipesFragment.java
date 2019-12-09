@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bcs421_leftoversapp.DataBase.RecipesContract;
 import com.example.bcs421_leftoversapp.DataBase.UsersContract;
@@ -37,7 +38,7 @@ public class SavedRecipesFragment extends Fragment {
     GoogleSignInClient mGoogleSignInClient;
     RecipePreview mRecipePreview;
     private RecipeSearchResultAdapter adapter;
-    private ListView savedRecipeListView;
+    private RecyclerView savedRecipeListView;
     View v;
     View view;
     NavigationView navigationView;
@@ -55,7 +56,6 @@ public class SavedRecipesFragment extends Fragment {
         adapter = new RecipeSearchResultAdapter(getActivity());
         navigationView = getActivity().findViewById(R.id.nav_view);
         savedRecipeListView.setAdapter(this.adapter);
-        adapter.clear();
 
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -68,10 +68,10 @@ public class SavedRecipesFragment extends Fragment {
         // get list of saved recipes for user
         ArrayList<Recipe> savedRecipeList = mRecipeContract.getRecipesOfUser(user.getID());
         //add recipes to list
-        addItemsToList(user.getID());
+//        addItemsToList(user.getID());
 
         //launch showRecipeActivity when list item is clicked
-        savedRecipeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+   /*     savedRecipeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 //Toast.makeText(RecipeSearchActivity.this, "You Choose: " + adapter.getItem(i).getIngredients(), Toast.LENGTH_SHORT).show();
@@ -97,13 +97,13 @@ public class SavedRecipesFragment extends Fragment {
                 });
                 builder.show();
             }
-        });
+        });*/
 
 
         return v;
     }
 
-    public void addItemsToList(Long id){
+/*    public void addItemsToList(Long id){
         ArrayList<Recipe> savedRecipeList = mRecipeContract.getRecipesOfUser(id);
         adapter.clear();
         for (int i=0; i < savedRecipeList.size(); i++) {
@@ -113,6 +113,6 @@ public class SavedRecipesFragment extends Fragment {
                     savedRecipeList.get(i).getThumbnail());
             adapter.add(mRecipePreview); //add the recipePreview object to adapter
         }
-    }
+    }*/
 
 }

@@ -2,6 +2,7 @@ package com.example.bcs421_leftoversapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bcs421_leftoversapp.adapters.RecipeSearchResultAdapter;
 import com.example.bcs421_leftoversapp.service.recipe.RecipeService;
@@ -33,7 +36,7 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
     private RecipeService recipeService;
     private RecipeSearchResultAdapter adapter;
     private SearchView searchView;
-    private ListView searchResultList;
+    public static RecyclerView searchResultList;
     private Subject<String> searchTextSubject;
     private Observable<String> onSearchTextChanged;
 
@@ -45,9 +48,15 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
 
         initialiseApiClient();
         searchView = v.findViewById(R.id.searchBar);
-        searchResultList = v.findViewById(R.id.searchResultList);
+        searchResultList = (RecyclerView) v.findViewById(R.id.searchResultList);
+
+        searchResultList.setLayoutManager(new LinearLayoutManager(v.getContext()));
+
         adapter = new RecipeSearchResultAdapter(getContext());
         searchResultList.setAdapter(this.adapter);
+
+
+
         searchView.setOnQueryTextListener(this);
         searchTextSubject = BehaviorSubject.create();
         // Debounce searches by 300ms to prevent lots of API requests in quick succession
@@ -65,7 +74,7 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
 
         subscribeToSearchTextChanges();
 
-        searchResultList.setOnItemClickListener((adapterView, view, i, l) -> {
+       /* searchResultList.setOnItemClickListener((adapterView, view, i, l) -> {
             //Toast.makeText(RecipeSearchActivity.this, "You Choose: " + adapter.getItem(i).getIngredients(), Toast.LENGTH_SHORT).show();
             Intent ex = new Intent(getActivity(), ShowRecipe.class);
             ex.putExtra("ingr", adapter.getItem(i).getIngredients());
@@ -74,7 +83,7 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
             ex.putExtra("href", adapter.getItem(i).getHref());
             startActivity(ex);
 
-        });
+        });*/
 
         return v;
     }
@@ -84,15 +93,14 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
         this.recipeService = new RecipePuppyService();
     }
 
-    @Override
+//    @Override
     public boolean onQueryTextSubmit(String query) {
         return true;
     }
 
-    @Override
+//    @Override
     public boolean onQueryTextChange(final String newText) {
         if (newText.trim().length() == 0) {
-            adapter.clear();
             return true;
         }
         searchTextSubject.onNext(newText);
@@ -106,18 +114,20 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(recipes -> {
-                    adapter.clear();
-                    adapter.addAll(recipes);
-                    //check adapter list and remove recipes without thumbnails
-                    for (int i = adapter.getCount()-1; i >= 0 ; i--) { //
+/*                adapter = new RecipeSearchResultAdapter(getContext(), recipes);
+                searchResultList.setAdapter(adapter);*/
+                Log.d("LIST", recipes.toString());
+//                    recipes.addAll(recipes);
 
-                        if(String.valueOf(adapter.getItem(i).getThumbnail()).equals("")) {
-                            adapter.remove(adapter.getItem(i));
+                    //check adapter list and remove recipes without thumbnails
+/*                    for (int i = recipes.size()-1; i >= 0 ; i--) { //
+
+                        if(String.valueOf(recipes.get(i).getThumbnail()).equals("")) {
+                            recipes.remove(recipes.get(i));
                         }
-                    }
+                    }*/
                 })
                 .subscribe());
 
     }
-
 }
