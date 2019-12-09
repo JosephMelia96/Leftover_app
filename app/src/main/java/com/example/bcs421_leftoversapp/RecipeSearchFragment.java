@@ -55,26 +55,19 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-
-//        adapter = new RecipeSearchResultAdapter(getContext());
-//        searchResultList.setAdapter(this.adapter);
         searchView.setOnQueryTextListener(this);
         searchTextSubject = BehaviorSubject.create();
         // Debounce searches by 300ms to prevent lots of API requests in quick succession
         onSearchTextChanged = searchTextSubject.debounce(300, TimeUnit.MILLISECONDS);
 
-        //if intent key value is not null then set query to passed value and run query
+        //if bundle is not null then set query to passed value and run query
         //will automatically load which ever category was pressed
-//        if (getActivity().getIntent().getStringExtra("category") != null) {
-//            searchView.setQuery(getActivity().getIntent().getStringExtra("category"),false);
-//        }
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             searchView.setQuery(bundle.getString("category"),false);
         }
 
         subscribeToSearchTextChanges();
-
         return v;
     }
 
@@ -117,10 +110,7 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
                             recipeList.remove(i);
                         }
                     }
-
                 })
                 .subscribe());
-
     }
-
 }

@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bcs421_leftoversapp.DataBase.RecipesContract;
 import com.example.bcs421_leftoversapp.DataBase.UsersContract;
@@ -35,41 +37,40 @@ public class SavedRecipesFragment extends Fragment {
     UsersContract mUserContract;
     RecipesContract mRecipeContract;
     GoogleSignInClient mGoogleSignInClient;
-    RecipePreview mRecipePreview;
-    private RecipeSearchResultAdapter adapter;
-    private ListView savedRecipeListView;
-    View v;
-    View view;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private RecipePreview mRecipePreview;
     NavigationView navigationView;
-
+    ArrayList<RecipePreview> recipePreviewsList;
+    View v;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.fragment_saved_recipes, container, false);
-//
-//        this.mUserContract = new UsersContract(getActivity());
-//        this.mRecipeContract = new RecipesContract(getActivity());
-//        savedRecipeListView = v.findViewById(R.id.savedRecipeList);
-//        adapter = new RecipeSearchResultAdapter(getActivity());
-//        navigationView = getActivity().findViewById(R.id.nav_view);
-//        savedRecipeListView.setAdapter(this.adapter);
-//
-//
-//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestEmail()
-//                .build();
-//
-//        mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
-//        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getActivity());
-//        User user = mUserContract.getParentIdByEmail(acct.getEmail());
-//        // get list of saved recipes for user
-//        ArrayList<Recipe> savedRecipeList = mRecipeContract.getRecipesOfUser(user.getID());
-//        //add recipes to list
-//        addItemsToList(user.getID());
-//
-//        //launch showRecipeActivity when list item is clicked
+
+        this.mUserContract = new UsersContract(getActivity());
+        this.mRecipeContract = new RecipesContract(getActivity());
+        mRecyclerView = v.findViewById(R.id.recyclerView);
+        mRecyclerView.setHasFixedSize(true); // since size of view will not change, set this to true to increase apps efficiency
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        navigationView = getActivity().findViewById(R.id.nav_view);
+
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getActivity());
+        User user = mUserContract.getParentIdByEmail(acct.getEmail());
+        //add recipes to list
+        addItemsToList(user.getID());
+
+        //launch showRecipeActivity when list item is clicked
 //        savedRecipeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
 //            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -97,21 +98,26 @@ public class SavedRecipesFragment extends Fragment {
 //                builder.show();
 //            }
 //        });
-//
-//
+
+
         return v;
     }
-//
-//    public void addItemsToList(Long id){
-//        ArrayList<Recipe> savedRecipeList = mRecipeContract.getRecipesOfUser(id);
-//        adapter.clear();
-//        for (int i=0; i < savedRecipeList.size(); i++) {
-//            // use the RecipePreview constructor to create new Preview objects
-//            this.mRecipePreview = new RecipePreview(savedRecipeList.get(i).getTitle(),
-//                    savedRecipeList.get(i).getHref(),savedRecipeList.get(i).getIngredients(),
-//                    savedRecipeList.get(i).getThumbnail());
-//            adapter.add(mRecipePreview); //add the recipePreview object to adapter
-//        }
-//    }
+
+    public void addItemsToList(Long id){
+        ArrayList<Recipe> savedRecipeList = mRecipeContract.getRecipesOfUser(id);
+
+        if (savedRecipeList.size() != 0) {
+            for (int i = 0; i < savedRecipeList.size(); i++) {
+                // use the RecipePreview constructor to create new Preview objects
+                this.mRecipePreview = new RecipePreview(savedRecipeList.get(i).getTitle(),
+                        savedRecipeList.get(i).getHref(), savedRecipeList.get(i).getIngredients(),
+                        savedRecipeList.get(i).getThumbnail());
+                recipePreviewsList.add(mRecipePreview); //add the recipePreview object to list
+            }
+
+            mAdapter = new RecipeSearchResultAdapter(getContext(), recipePreviewsList);
+            mRecyclerView.setAdapter(mAdapter);
+        }
+    }
 
 }
