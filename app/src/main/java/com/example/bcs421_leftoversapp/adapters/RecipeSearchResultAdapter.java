@@ -17,8 +17,6 @@ import com.bumptech.glide.Glide;
 import com.example.bcs421_leftoversapp.R;
 import com.example.bcs421_leftoversapp.models.RecipePreview;
 
-import java.util.List;
-
 public class RecipeSearchResultAdapter extends ArrayAdapter<RecipePreview> {
 
     public RecipeSearchResultAdapter(@NonNull Context context) {

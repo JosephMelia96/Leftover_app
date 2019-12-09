@@ -48,7 +48,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         //create intent object to pass clicked image value to next activity
-        Intent intent = new Intent(getActivity(),RecipeSearchActivity.class);
         RecipeSearchFragment fragment = new RecipeSearchFragment();
         FragmentManager fm = getActivity().getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();

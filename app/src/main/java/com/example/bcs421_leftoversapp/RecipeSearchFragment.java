@@ -66,7 +66,6 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
         subscribeToSearchTextChanges();
 
         searchResultList.setOnItemClickListener((adapterView, view, i, l) -> {
-            //Toast.makeText(RecipeSearchActivity.this, "You Choose: " + adapter.getItem(i).getIngredients(), Toast.LENGTH_SHORT).show();
             Intent ex = new Intent(getActivity(), ShowRecipe.class);
             ex.putExtra("ingr", adapter.getItem(i).getIngredients());
             ex.putExtra("img", adapter.getItem(i).getThumbnail());

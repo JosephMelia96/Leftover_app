@@ -25,13 +25,19 @@ public final class UsersContract {
     //column and table names
     public static final class UsersEntry implements BaseColumns {
         public static final String TABLE_NAME="users";
+        public static final String COL_FIRST_NAME="firstName";
+        public static final String COL_LAST_NAME="lastName";
         public static final String COL_EMAIL="email";
+        public static final String COL_PASSWORD="password";
     }
 
     //reference to table column names for queries
     private String[] mAllColumns = {
             UsersEntry._ID,
-            UsersEntry.COL_EMAIL
+            UsersEntry.COL_FIRST_NAME,
+            UsersEntry.COL_LAST_NAME,
+            UsersEntry.COL_EMAIL,
+            UsersEntry.COL_PASSWORD
     };
 
     //constructor to open parents table
@@ -57,18 +63,21 @@ public final class UsersContract {
     }
 
     //add user into database
-    public User createUser(String Email) {
+    public User createUser(String firstName, String lastName, String email, String password) {
         ContentValues cv = new ContentValues();
-        cv.put(UsersEntry.COL_EMAIL, Email);
+        cv.put(UsersEntry.COL_FIRST_NAME, firstName);
+        cv.put(UsersEntry.COL_LAST_NAME, lastName);
+        cv.put(UsersEntry.COL_EMAIL, email);
+        cv.put(UsersEntry.COL_PASSWORD, password);
 
         long insertId = mDb.insert(UsersEntry.TABLE_NAME,null,cv);
         Cursor cursor = mDb.query(UsersEntry.TABLE_NAME, mAllColumns, UsersEntry._ID +
                 " = " + insertId, null, null, null, null);
         cursor.moveToFirst();
-        User newParent = cursorToUser(cursor);
+        User newUser = cursorToUser(cursor);
         cursor.close();
         mDb.close();
-        return newParent;
+        return newUser;
     }
 
     //return parent by searching by id
@@ -132,7 +141,10 @@ public final class UsersContract {
     protected User cursorToUser(Cursor cursor) {
         User user = new User();
         user.setID(cursor.getLong(0));
-        user.setEmail(cursor.getString(1));
+        user.setFirstName(cursor.getString(1));
+        user.setLastName(cursor.getString(2));
+        user.setEmail(cursor.getString(3));
+        user.setPassword(cursor.getString(4));
         return user;
     }
 

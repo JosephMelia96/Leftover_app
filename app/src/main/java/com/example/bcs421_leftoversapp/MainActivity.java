@@ -109,10 +109,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    private void createUserInDatabase(String email) {
-        User newUser = mUsersContract.createUser(email);
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -159,9 +155,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 try {
                     String id = object.getString("id");
-                    String name = object.getString("first_name") + " " + object.getString("last_name");
                     //pass facebook user info into intent
-                    facebookIntent.putExtra("name",name);
+                    facebookIntent.putExtra("firstName",object.getString("first_name"));
+                    facebookIntent.putExtra("lastName",object.getString("last_name"));
                     facebookIntent.putExtra("email",object.getString("email"));
                     facebookIntent.putExtra("image_url","https://graph.facebook.com/"+id+"/picture?type=normal");
                     RequestOptions requestOptions = new RequestOptions();

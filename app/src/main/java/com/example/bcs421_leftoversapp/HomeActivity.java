@@ -95,8 +95,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         headerView = navigationView.getHeaderView(0);
     }
 
-    private void createUserInDatabase(String email) {
-        mUsersContract.createUser(email);
+    private void createUserInDatabase(String firstName, String lastName, String email) {
+        mUsersContract.createUser(firstName,lastName,email,"");
     }
 
 
@@ -113,11 +113,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             Glide.with(this).load(String.valueOf(acct.getPhotoUrl())).into(nav_userPicture);
 
             this.mUsersContract = new UsersContract(this); //initialize UsersContract
+            String firstName = acct.getGivenName();
+            String lastName = acct.getFamilyName();
             String email = acct.getEmail();
             if(mUsersContract.checkForExistingUser(email))
                 Log.d("EMAIL","Email exists");
             else {
-                createUserInDatabase(email);
+                createUserInDatabase(firstName, lastName,email);
                 Log.d("EMAIL", "Email does not exist");
             }
 
@@ -133,11 +135,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             Glide.with(this).load(String.valueOf(getIntent().getStringExtra("image_url"))).into(nav_userPicture);
 
             this.mUsersContract = new UsersContract(this); //initialize UsersContract
+            String firstName = getIntent().getStringExtra("firstName");
+            String lastName = getIntent().getStringExtra("lastName");
             String email = getIntent().getStringExtra("email");
             if(mUsersContract.checkForExistingUser(email))
                 Log.d("EMAIL","Email exists");
             else {
-                createUserInDatabase(email);
+                createUserInDatabase(firstName, lastName, email);
                 Log.d("EMAIL", "Email does not exist");
             }
 
