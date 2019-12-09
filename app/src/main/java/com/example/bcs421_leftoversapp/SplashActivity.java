@@ -12,7 +12,6 @@ import com.example.bcs421_leftoversapp.DataBase.UsersContract;
 public class SplashActivity extends AppCompatActivity {
 
     private final int SPLASH_DELAY = 3000;
-    private UsersContract mUsersContract;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
