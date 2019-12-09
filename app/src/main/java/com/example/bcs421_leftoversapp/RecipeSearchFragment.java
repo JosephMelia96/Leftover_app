@@ -35,7 +35,6 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
     private final int MAX_RECIPES_TO_SHOW = 20;
 
     private RecipeService recipeService;
-    private RecipeSearchResultAdapter adapter;
     private SearchView searchView;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -101,25 +100,24 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
 
     public void subscribeToSearchTextChanges() {
 
+        // Array list to hold recipePreview list passed by query
         ArrayList<RecipePreview> recipeList = new ArrayList<>();
 
         onSearchTextChanged.subscribe(text -> recipeService.searchRecipes(text, MAX_RECIPES_TO_SHOW)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(recipes -> {
-
                     recipeList.addAll(recipes);
                     mAdapter = new RecipeSearchResultAdapter(getContext(),recipeList);
                     mRecyclerView.setAdapter(mAdapter);
-//                    adapter.clear();
-//                    adapter.addAll(recipes);
-//                    //check adapter list and remove recipes without thumbnails
-//                    for (int i = adapter.getCount()-1; i >= 0 ; i--) { //
-//
-//                        if(String.valueOf(adapter.getItem(i).getThumbnail()).equals("")) {
-//                            adapter.remove(adapter.getItem(i));
-//                        }
-//                    }
+
+                    // remove recipes without thumbnails from recipeList
+                    for(int i = mAdapter.getItemCount()-1; i >= 0 ; i--) {
+                        if (String.valueOf(recipeList.get(i).getThumbnail()).equals("")) {
+                            recipeList.remove(i);
+                        }
+                    }
+
                 })
                 .subscribe());
 
