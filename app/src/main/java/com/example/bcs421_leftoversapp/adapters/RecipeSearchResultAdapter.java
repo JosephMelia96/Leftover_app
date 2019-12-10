@@ -27,13 +27,14 @@ public class RecipeSearchResultAdapter extends RecyclerView.Adapter<RecipeSearch
 
     private ArrayList<RecipePreview> mRecipeList;
     private Context mContext;
+    private OnRecipeListener onRecipeListener;
 
     @NonNull
     @Override
     public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // pass layout to recipe holder
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_result,parent,false);
-        return new RecipeViewHolder(v);
+        return new RecipeViewHolder(v, onRecipeListener);
     }
 
     @Override
@@ -49,22 +50,36 @@ public class RecipeSearchResultAdapter extends RecyclerView.Adapter<RecipeSearch
     }
 
     // will transfer data into local variable so we can extract all queried recipes
-    public RecipeSearchResultAdapter(Context context, ArrayList<RecipePreview> recipeList) {
+    public RecipeSearchResultAdapter(Context context, ArrayList<RecipePreview> recipeList, OnRecipeListener onRecipeListener) {
         this.mRecipeList = recipeList;
         this.mContext = context;
+        this.onRecipeListener = onRecipeListener;
     }
 
-    public static class RecipeViewHolder extends RecyclerView.ViewHolder {
+    public static class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         // initialize views
         public ImageView mImageView;
         public TextView mTextView;
+        OnRecipeListener onRecipeListener;
 
-        public RecipeViewHolder(@NonNull View itemView) {
+        public RecipeViewHolder(@NonNull View itemView, OnRecipeListener onRecipeListener) {
             super(itemView);
             //add reference to view so adapter can use them
             mImageView = itemView.findViewById(R.id.searchThumb);
             mTextView = itemView.findViewById(R.id.searchResultTitle);
+            this.onRecipeListener = onRecipeListener;
+
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            onRecipeListener.onRecipeClick(getAdapterPosition());
+        }
+    }
+
+    public interface OnRecipeListener {
+        void onRecipeClick(int position);
     }
 
 }
