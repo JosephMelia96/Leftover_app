@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,6 +44,7 @@ public class SavedRecipesFragment extends Fragment implements RecipeSearchResult
     private RecipePreview mRecipePreview;
     NavigationView navigationView;
     ArrayList<RecipePreview> recipePreviewsList;
+    ArrayList<Recipe> savedRecipeList;
     View v;
 
     @Nullable
@@ -70,49 +72,35 @@ public class SavedRecipesFragment extends Fragment implements RecipeSearchResult
         //add recipes to list
         addItemsToList(user.getID());
 
-        //launch showRecipeActivity when list item is clicked
-//        savedRecipeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                //Toast.makeText(RecipeSearchActivity.this, "You Choose: " + adapter.getItem(i).getIngredients(), Toast.LENGTH_SHORT).show();
-//                Intent ex = new Intent(getActivity(), ShowRecipe.class);
-//                ex.putExtra("ingr", adapter.getItem(i).getIngredients());
-//                ex.putExtra("img", adapter.getItem(i).getThumbnail());
-//                ex.putExtra("title", adapter.getItem(i).getTitle());
-//                ex.putExtra("href", adapter.getItem(i).getHref());
-//
-//                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-//                builder.setTitle("Recipe Options");
-//                builder.setPositiveButton("View Recipe", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        startActivity(ex);
-//                    }
-//                }).setNegativeButton("Unsave Recipe", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        mRecipeContract.removeSavedRecipe(savedRecipeList.get(i).getId());
-//                        addItemsToList(user.getID());
-//                    }
-//                });
-//                builder.show();
-//            }
-//        });
+        // Create a new ItemTouchHelper with a SimpleCallback that handles both LEFT and RIGHT swipe directions
+        // Create an item touch helper to handle swiping items off the list
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
 
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                mRecipeContract.removeSavedRecipe(savedRecipeList.get(viewHolder.getLayoutPosition()).getId());
+                addItemsToList(user.getID());
+            }
+        }).attachToRecyclerView(mRecyclerView);;
 
         return v;
     }
 
     public void addItemsToList(Long id){
-        ArrayList<Recipe> savedRecipeList = mRecipeContract.getRecipesOfUser(id);
-        recipePreviewsList = new ArrayList<>();
+        savedRecipeList = new ArrayList<Recipe>();
+        savedRecipeList = mRecipeContract.getRecipesOfUser(id);
+        recipePreviewsList = new ArrayList<RecipePreview>();
 
         if (savedRecipeList.size() != 0) {
             for (int i = 0; i < savedRecipeList.size(); i++) {
                 // use the RecipePreview constructor to create new Preview objects
                 this.mRecipePreview = new RecipePreview(savedRecipeList.get(i).getTitle(),
                         savedRecipeList.get(i).getHref(), savedRecipeList.get(i).getIngredients(),
-                        savedRecipeList.get(i).getThumbnail());
+                        savedRecipeList.get(i).getThumbnail(), savedRecipeList.get(i).getId());
                 recipePreviewsList.add(mRecipePreview); //add the recipePreview object to list
             }
 

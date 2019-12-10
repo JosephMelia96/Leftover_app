@@ -9,6 +9,7 @@ public class RecipePreview {
     private String href;
     private String ingredients;
     private String thumbnail;
+    private Long id;
 
     /**
      * Default no-args constructor for GSON marshalling.
@@ -22,11 +23,12 @@ public class RecipePreview {
      * @param ingredients a comma delimited list of the recipe ingredients.
      * @param thumbnail an image preview of the recipe.
      */
-    public RecipePreview(String title, String href, String ingredients, String thumbnail) {
+    public RecipePreview(String title, String href, String ingredients, String thumbnail, Long id) {
         this.title = title;
         this.href = href;
         this.ingredients = ingredients;
         this.thumbnail = thumbnail;
+        this.id = id;
     }
 
     /**
@@ -59,6 +61,10 @@ public class RecipePreview {
      */
     public String getThumbnail() {
         return thumbnail;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override
