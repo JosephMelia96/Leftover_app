@@ -8,12 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bcs421_leftoversapp.DataBase.RecipesContract;
 import com.example.bcs421_leftoversapp.DataBase.UsersContract;
@@ -30,18 +34,19 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 
 
-public class SavedRecipesFragment extends Fragment {
+public class SavedRecipesFragment extends Fragment implements RecipeSearchResultAdapter.OnRecipeListener{
 
     UsersContract mUserContract;
     RecipesContract mRecipeContract;
     GoogleSignInClient mGoogleSignInClient;
-    RecipePreview mRecipePreview;
-    private RecipeSearchResultAdapter adapter;
-    private ListView savedRecipeListView;
-    View v;
-    View view;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private RecipePreview mRecipePreview;
     NavigationView navigationView;
-
+    ArrayList<RecipePreview> recipePreviewsList;
+    ArrayList<Recipe> savedRecipeList;
+    View v;
 
     @Nullable
     @Override
@@ -51,11 +56,11 @@ public class SavedRecipesFragment extends Fragment {
 
         this.mUserContract = new UsersContract(getActivity());
         this.mRecipeContract = new RecipesContract(getActivity());
-        savedRecipeListView = v.findViewById(R.id.savedRecipeList);
-        adapter = new RecipeSearchResultAdapter(getActivity());
+        mRecyclerView = v.findViewById(R.id.recyclerView);
+        mRecyclerView.setHasFixedSize(true); // since size of view will not change, set this to true to increase apps efficiency
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
         navigationView = getActivity().findViewById(R.id.nav_view);
-        savedRecipeListView.setAdapter(this.adapter);
-        adapter.clear();
 
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -65,54 +70,54 @@ public class SavedRecipesFragment extends Fragment {
         mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getActivity());
         User user = mUserContract.getParentIdByEmail(acct.getEmail());
-        // get list of saved recipes for user
-        ArrayList<Recipe> savedRecipeList = mRecipeContract.getRecipesOfUser(user.getID());
         //add recipes to list
         addItemsToList(user.getID());
 
-        //launch showRecipeActivity when list item is clicked
-        savedRecipeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        // Create a new ItemTouchHelper with a SimpleCallback that handles both LEFT and RIGHT swipe directions
+        // Create an item touch helper to handle swiping items off the list
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //Toast.makeText(RecipeSearchActivity.this, "You Choose: " + adapter.getItem(i).getIngredients(), Toast.LENGTH_SHORT).show();
-                Intent ex = new Intent(getActivity(), ShowRecipe.class);
-                ex.putExtra("ingr", adapter.getItem(i).getIngredients());
-                ex.putExtra("img", adapter.getItem(i).getThumbnail());
-                ex.putExtra("title", adapter.getItem(i).getTitle());
-                ex.putExtra("href", adapter.getItem(i).getHref());
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("Recipe Options");
-                builder.setPositiveButton("View Recipe", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        startActivity(ex);
-                    }
-                }).setNegativeButton("Unsave Recipe", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mRecipeContract.removeSavedRecipe(savedRecipeList.get(i).getId());
-                        addItemsToList(user.getID());
-                    }
-                });
-                builder.show();
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
             }
-        });
 
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                mRecipeContract.removeSavedRecipe(savedRecipeList.get(viewHolder.getLayoutPosition()).getId());
+                Toast.makeText(getContext(), "Recipe Unsaved", Toast.LENGTH_SHORT).show();
+                addItemsToList(user.getID());
+            }
+        }).attachToRecyclerView(mRecyclerView);;
 
         return v;
     }
 
     public void addItemsToList(Long id){
-        ArrayList<Recipe> savedRecipeList = mRecipeContract.getRecipesOfUser(id);
-        adapter.clear();
-        for (int i=0; i < savedRecipeList.size(); i++) {
-            // use the RecipePreview constructor to create new Preview objects
-            this.mRecipePreview = new RecipePreview(savedRecipeList.get(i).getTitle(),
-                    savedRecipeList.get(i).getHref(),savedRecipeList.get(i).getIngredients(),
-                    savedRecipeList.get(i).getThumbnail());
-            adapter.add(mRecipePreview); //add the recipePreview object to adapter
+        savedRecipeList = new ArrayList<Recipe>();
+        savedRecipeList = mRecipeContract.getRecipesOfUser(id);
+        recipePreviewsList = new ArrayList<RecipePreview>();
+
+        if (savedRecipeList.size() != 0) {
+            for (int i = 0; i < savedRecipeList.size(); i++) {
+                // use the RecipePreview constructor to create new Preview objects
+                this.mRecipePreview = new RecipePreview(savedRecipeList.get(i).getTitle(),
+                        savedRecipeList.get(i).getHref(), savedRecipeList.get(i).getIngredients(),
+                        savedRecipeList.get(i).getThumbnail(), savedRecipeList.get(i).getId());
+                recipePreviewsList.add(mRecipePreview); //add the recipePreview object to list
+            }
+
+            mAdapter = new RecipeSearchResultAdapter(getContext(), recipePreviewsList,this);
+            mRecyclerView.setAdapter(mAdapter);
         }
     }
 
+    @Override
+    public void onRecipeClick(int position) {
+        Intent intent = new Intent(getActivity(),ShowRecipe.class);
+        intent.putExtra("title", recipePreviewsList.get(position).getTitle());
+        intent.putExtra("ingr", recipePreviewsList.get(position).getIngredients());
+        intent.putExtra("img", recipePreviewsList.get(position).getThumbnail());
+        intent.putExtra("href", recipePreviewsList.get(position).getHref());
+        startActivity(intent);
+    }
 }

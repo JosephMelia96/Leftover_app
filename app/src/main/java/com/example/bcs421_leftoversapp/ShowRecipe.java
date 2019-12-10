@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -46,6 +47,7 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
     public Uri imageUri;
     Intent camIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     final Intent intent = new Intent(Intent.ACTION_SEND);
+    Button btn_share;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +59,11 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
         ingredients=findViewById(R.id.ingredients);
         title = findViewById(R.id.title);
         img = findViewById(R.id.img);
+        btn_share = findViewById(R.id.btn_share);
         findViewById(R.id.btn_share).setOnClickListener(this);
         findViewById(R.id.btn_save).setOnClickListener(this);
         findViewById(R.id.btn_home).setOnClickListener(this);
+
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()

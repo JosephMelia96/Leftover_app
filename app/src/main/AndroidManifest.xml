@@ -3,12 +3,12 @@
     package="com.example.bcs421_leftoversapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission
         android:name="android.permnission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
 
-    <uses-feature android:name="android.hardware.camera2"
+    <uses-feature
+        android:name="android.hardware.camera2"
         android:required="false" />
 
     <application
@@ -19,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ShowRecipe"></activity>
+        <activity android:name=".ShowRecipe" />
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,10 +31,10 @@
             android:name=".HomeActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".RecipeSearchActivity" />
 
-        <meta-data android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"/>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -43,9 +43,8 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
-
     </application>
 
 </manifest>

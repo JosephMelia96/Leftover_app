@@ -2,7 +2,9 @@ package com.example.bcs421_leftoversapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -13,11 +15,16 @@ import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bcs421_leftoversapp.adapters.RecipeSearchResultAdapter;
+import com.example.bcs421_leftoversapp.models.RecipePreview;
 import com.example.bcs421_leftoversapp.service.recipe.RecipeService;
 import com.example.bcs421_leftoversapp.service.recipe.recipepuppy.RecipePuppyService;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -26,17 +33,18 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
-public class RecipeSearchFragment extends Fragment implements SearchView.OnQueryTextListener {
-
-    private final int MAX_RECIPES_TO_SHOW = 20;
+public class RecipeSearchFragment extends Fragment implements SearchView.OnQueryTextListener, RecipeSearchResultAdapter.OnRecipeListener {
+  // value for how many recipes card to show
+    private final int MAX_RECIPES_TO_SHOW = 50;
 
     private RecipeService recipeService;
-    private RecipeSearchResultAdapter adapter;
     private SearchView searchView;
-    private ListView searchResultList;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
     private Subject<String> searchTextSubject;
     private Observable<String> onSearchTextChanged;
-
+    private ArrayList<RecipePreview> recipeList;
 
     @Nullable
     @Override
@@ -45,19 +53,18 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
 
         initialiseApiClient();
         searchView = v.findViewById(R.id.searchBar);
-        searchResultList = v.findViewById(R.id.searchResultList);
-        adapter = new RecipeSearchResultAdapter(getContext());
-        searchResultList.setAdapter(this.adapter);
+        mRecyclerView = v.findViewById(R.id.recyclerView);
+        mRecyclerView.setHasFixedSize(true); // since size of view will not change, set this to true to increase apps efficiency
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
         searchView.setOnQueryTextListener(this);
         searchTextSubject = BehaviorSubject.create();
         // Debounce searches by 300ms to prevent lots of API requests in quick succession
         onSearchTextChanged = searchTextSubject.debounce(300, TimeUnit.MILLISECONDS);
 
-        //if intent key value is not null then set query to passed value and run query
+        //if bundle is not null then set query to passed value and run query
         //will automatically load which ever category was pressed
-//        if (getActivity().getIntent().getStringExtra("category") != null) {
-//            searchView.setQuery(getActivity().getIntent().getStringExtra("category"),false);
-//        }
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             searchView.setQuery(bundle.getString("category"),false);
@@ -65,22 +72,32 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
 
         subscribeToSearchTextChanges();
 
-        searchResultList.setOnItemClickListener((adapterView, view, i, l) -> {
-            //Toast.makeText(RecipeSearchActivity.this, "You Choose: " + adapter.getItem(i).getIngredients(), Toast.LENGTH_SHORT).show();
-            Intent ex = new Intent(getActivity(), ShowRecipe.class);
-            ex.putExtra("ingr", adapter.getItem(i).getIngredients());
-            ex.putExtra("img", adapter.getItem(i).getThumbnail());
-            ex.putExtra("title", adapter.getItem(i).getTitle());
-            ex.putExtra("href", adapter.getItem(i).getHref());
-            startActivity(ex);
+        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                return false;
+            }
 
+            @Override
+            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                Intent intent = new Intent(getActivity(),ShowRecipe.class);
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+            }
         });
 
         return v;
     }
 
+    //Create a new ItemTouchHelper with a SimpleCallback that handles both LEFT and RIGHT swipe directions
+    // Create an item touch helper to handle swiping items off the list
 
-    private void initialiseApiClient() {
+
+
+        private void initialiseApiClient() {
         this.recipeService = new RecipePuppyService();
     }
 
@@ -92,7 +109,6 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
     @Override
     public boolean onQueryTextChange(final String newText) {
         if (newText.trim().length() == 0) {
-            adapter.clear();
             return true;
         }
         searchTextSubject.onNext(newText);
@@ -102,22 +118,34 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
 
     public void subscribeToSearchTextChanges() {
 
+        // Array list to hold recipePreview list passed by query
+        recipeList = new ArrayList<>();
+
         onSearchTextChanged.subscribe(text -> recipeService.searchRecipes(text, MAX_RECIPES_TO_SHOW)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(recipes -> {
-                    adapter.clear();
-                    adapter.addAll(recipes);
-                    //check adapter list and remove recipes without thumbnails
-                    for (int i = adapter.getCount()-1; i >= 0 ; i--) { //
+                    recipeList.addAll(recipes);
+                    mAdapter = new RecipeSearchResultAdapter(getContext(),recipeList, this);
+                    mRecyclerView.setAdapter(mAdapter);
 
-                        if(String.valueOf(adapter.getItem(i).getThumbnail()).equals("")) {
-                            adapter.remove(adapter.getItem(i));
+                    // remove recipes without thumbnails from recipeList
+                    for(int i = mAdapter.getItemCount()-1; i >= 0 ; i--) {
+                        if (String.valueOf(recipeList.get(i).getThumbnail()).equals("")) {
+                            recipeList.remove(i);
                         }
                     }
                 })
                 .subscribe());
-
     }
 
+    @Override
+    public void onRecipeClick(int position) {
+        Intent intent = new Intent(getActivity(),ShowRecipe.class);
+        intent.putExtra("title", recipeList.get(position).getTitle());
+        intent.putExtra("ingr", recipeList.get(position).getIngredients());
+        intent.putExtra("img", recipeList.get(position).getThumbnail());
+        intent.putExtra("href", recipeList.get(position).getHref());
+        startActivity(intent);
+    }
 }

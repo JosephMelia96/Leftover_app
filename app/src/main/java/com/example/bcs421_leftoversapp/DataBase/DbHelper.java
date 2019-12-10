@@ -14,7 +14,10 @@ public class DbHelper extends SQLiteOpenHelper {
     //query to create users table
     public static final String SQL_CREATE_USERS_TABLE = "CREATE TABLE " + UsersEntry.TABLE_NAME + " (" +
             UsersEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            UsersEntry.COL_EMAIL + " TEXT NOT NULL" +
+            UsersEntry.COL_FIRST_NAME + " TEXT NOT NULL, " +
+            UsersEntry.COL_LAST_NAME + " TEXT NOT NULL, " +
+            UsersEntry.COL_EMAIL + " TEXT NOT NULL, " +
+            UsersEntry.COL_PASSWORD + " TEXT NOT NULL" +
             "); ";
 
     //query to create recipes table

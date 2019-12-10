@@ -7,6 +7,8 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.example.bcs421_leftoversapp.DataBase.UsersContract;
+
 public class SplashActivity extends AppCompatActivity {
 
     private final int SPLASH_DELAY = 3000;
@@ -16,7 +18,6 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //lock screen to portrait
-
 
         /* New Handler to start the Menu-Activity
          * and close this Splash-Screen after some seconds.*/
@@ -29,5 +30,6 @@ public class SplashActivity extends AppCompatActivity {
                 SplashActivity.this.finish();
             }
         }, SPLASH_DELAY);
+
     }
 }
