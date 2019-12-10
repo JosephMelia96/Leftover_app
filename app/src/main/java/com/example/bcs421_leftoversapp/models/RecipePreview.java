@@ -3,6 +3,11 @@ package com.example.bcs421_leftoversapp.models;
 /**
  * Represents a preview of a recipe as displayed for example in a search result.
  */
+
+/*class to create recipe for use in the RecipeSearchFragment.
+
+Different from Recipe class in that RecipePreview is strictly for recipes in the search fragment,
+Recipe class is used to bookmark user recipes in the database*/
 public class RecipePreview {
 
     private String title;

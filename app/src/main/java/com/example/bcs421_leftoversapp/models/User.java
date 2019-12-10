@@ -8,7 +8,8 @@ public class User {
     private String mEmail;
     private String mPassword;
 
-    public User() { };
+    public User() {
+    }
 
     //used for local user
     public User(String mFirstName, String mLastName, String mEmail, String mPassword) {

@@ -18,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
+//class to show user account information from Google or Facebook
 public class AccountSettingsFragment extends Fragment {
 
     GoogleSignInClient mGoogleSignInClient;
@@ -26,7 +27,7 @@ public class AccountSettingsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-       View v = inflater.inflate(R.layout.fragment_account_settings,container,false);
+        View v = inflater.inflate(R.layout.fragment_account_settings,container,false);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -53,9 +54,6 @@ public class AccountSettingsFragment extends Fragment {
             }
 
         }
-
-
         return v;
-
     }
 }

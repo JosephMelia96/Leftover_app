@@ -1,12 +1,9 @@
 package com.example.bcs421_leftoversapp.adapters;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,15 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-
 import com.example.bcs421_leftoversapp.R;
 import com.example.bcs421_leftoversapp.models.RecipePreview;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
-
+//adapter class to use in RecipeSearchFragment
 public class RecipeSearchResultAdapter extends RecyclerView.Adapter<RecipeSearchResultAdapter.RecipeViewHolder> {
 
     private ArrayList<RecipePreview> mRecipeList;
@@ -33,7 +27,7 @@ public class RecipeSearchResultAdapter extends RecyclerView.Adapter<RecipeSearch
     @Override
     public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // pass layout to recipe holder
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_result,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_result, parent, false);
         return new RecipeViewHolder(v, onRecipeListener);
     }
 
@@ -56,7 +50,7 @@ public class RecipeSearchResultAdapter extends RecyclerView.Adapter<RecipeSearch
         this.onRecipeListener = onRecipeListener;
     }
 
-    public static class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // initialize views
         public ImageView mImageView;
         public TextView mTextView;
@@ -72,6 +66,7 @@ public class RecipeSearchResultAdapter extends RecyclerView.Adapter<RecipeSearch
             itemView.setOnClickListener(this);
         }
 
+        //when recipe is clicked, get that position in the adapter
         @Override
         public void onClick(View v) {
             onRecipeListener.onRecipeClick(getAdapterPosition());

@@ -1,31 +1,24 @@
 package com.example.bcs421_leftoversapp;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.bumptech.glide.Glide;
 import com.example.bcs421_leftoversapp.DataBase.UsersContract;
-import com.example.bcs421_leftoversapp.adapters.RecipeSearchResultAdapter;
-import com.example.bcs421_leftoversapp.models.User;
-import com.example.bcs421_leftoversapp.service.recipe.RecipeService;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -33,15 +26,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
-import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
 
-
-import java.util.List;
-
-import io.reactivex.Observable;
-import io.reactivex.subjects.Subject;
-
+/*home activity to use swipe-in nav bar from left, change between home (search), account info,
+and saved recipes, and to sign out*/
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
@@ -75,8 +62,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,
-                R.string.navigation_drawer_open,R.string.navigation_drawer_open);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_open);
         drawerLayout.addDrawerListener(toggle);// add listener for navigation drawer
         toggle.syncState();
 
@@ -96,7 +83,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void createUserInDatabase(String firstName, String lastName, String email) {
-        mUsersContract.createUser(firstName,lastName,email,"");
+        mUsersContract.createUser(firstName, lastName, email, "");
     }
 
 
@@ -116,13 +103,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             String firstName = acct.getGivenName();
             String lastName = acct.getFamilyName();
             String email = acct.getEmail();
-            if(mUsersContract.checkForExistingUser(email))
-                Log.d("EMAIL","Email exists");
+            if (mUsersContract.checkForExistingUser(email))
+                Log.d("EMAIL", "Email exists");
             else {
-                createUserInDatabase(firstName, lastName,email);
+                createUserInDatabase(firstName, lastName, email);
                 Log.d("EMAIL", "Email does not exist");
             }
-
 
 
         } else if (getIntent().getStringExtra("name") != null) {
@@ -138,8 +124,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             String firstName = getIntent().getStringExtra("firstName");
             String lastName = getIntent().getStringExtra("lastName");
             String email = getIntent().getStringExtra("email");
-            if(mUsersContract.checkForExistingUser(email))
-                Log.d("EMAIL","Email exists");
+            if (mUsersContract.checkForExistingUser(email))
+                Log.d("EMAIL", "Email exists");
             else {
                 createUserInDatabase(firstName, lastName, email);
                 Log.d("EMAIL", "Email does not exist");

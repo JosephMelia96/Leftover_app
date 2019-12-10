@@ -1,27 +1,21 @@
 package com.example.bcs421_leftoversapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-
+//home menu, displays meal categories and search recipe button
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
     Button btn_searchRecipe;
-    ImageView breakfast, lunch, dinner, dessert;
-    private FragmentTransaction fragmentTransaction;
-    private FragmentManager fragmentManager;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
@@ -35,12 +29,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         v.findViewById(R.id.dinnerView).setOnClickListener(this);
         v.findViewById(R.id.dessertView).setOnClickListener(this);
 
-        btn_searchRecipe.setOnClickListener(view-> {
+        btn_searchRecipe.setOnClickListener(view -> {
             getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new RecipeSearchFragment()).commit();
         });
-
-
         return v;
     }
 
@@ -53,37 +45,28 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         FragmentTransaction transaction = fm.beginTransaction();
         Bundle bundle = new Bundle();
 
-
         //switch will get id of clicked image and run on corresponding case
         switch (v.getId()) {
             case R.id.breakfastView:
-//                intent.putExtra("category", "breakfast"); //add image value to intent
-//                startActivity(intent); //start new activity
-                bundle.putString("category","breakfast");
+                bundle.putString("category", "breakfast");
                 fragment.setArguments(bundle);
                 transaction.replace(R.id.fragment_container, fragment);
                 transaction.commit();
                 break;
             case R.id.lunchView:
-//                intent.putExtra("category", "lunch");
-//                startActivity(intent);
-                bundle.putString("category","lunch");
+                bundle.putString("category", "lunch");
                 fragment.setArguments(bundle);
                 transaction.replace(R.id.fragment_container, fragment);
                 transaction.commit();
                 break;
             case R.id.dinnerView:
-//                intent.putExtra("category", "dinner");
-//                startActivity(intent);
-                bundle.putString("category","dinner");
+                bundle.putString("category", "dinner");
                 fragment.setArguments(bundle);
                 transaction.replace(R.id.fragment_container, fragment);
                 transaction.commit();
                 break;
             case R.id.dessertView:
-//                intent.putExtra("category", "dessert");
-//                startActivity(intent);
-                bundle.putString("category","dessert");
+                bundle.putString("category", "dessert");
                 fragment.setArguments(bundle);
                 transaction.replace(R.id.fragment_container, fragment);
                 transaction.commit();
@@ -93,8 +76,4 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         new RecipeSearchFragment()).commit();
         }
     }
-
-
 }
-
-

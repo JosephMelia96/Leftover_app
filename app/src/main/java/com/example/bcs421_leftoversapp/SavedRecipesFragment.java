@@ -1,20 +1,15 @@
 package com.example.bcs421_leftoversapp;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,8 +28,8 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
-
-public class SavedRecipesFragment extends Fragment implements RecipeSearchResultAdapter.OnRecipeListener{
+//fragment to show recipes bookmarked by user, recipes can be swiped to delete
+public class SavedRecipesFragment extends Fragment implements RecipeSearchResultAdapter.OnRecipeListener {
 
     UsersContract mUserContract;
     RecipesContract mRecipeContract;
@@ -62,7 +57,6 @@ public class SavedRecipesFragment extends Fragment implements RecipeSearchResult
         mRecyclerView.setLayoutManager(mLayoutManager);
         navigationView = getActivity().findViewById(R.id.nav_view);
 
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -87,12 +81,11 @@ public class SavedRecipesFragment extends Fragment implements RecipeSearchResult
                 Toast.makeText(getContext(), "Recipe Unsaved", Toast.LENGTH_SHORT).show();
                 addItemsToList(user.getID());
             }
-        }).attachToRecyclerView(mRecyclerView);;
-
+        }).attachToRecyclerView(mRecyclerView);
         return v;
     }
 
-    public void addItemsToList(Long id){
+    public void addItemsToList(Long id) {
         savedRecipeList = new ArrayList<Recipe>();
         savedRecipeList = mRecipeContract.getRecipesOfUser(id);
         recipePreviewsList = new ArrayList<RecipePreview>();
@@ -106,14 +99,14 @@ public class SavedRecipesFragment extends Fragment implements RecipeSearchResult
                 recipePreviewsList.add(mRecipePreview); //add the recipePreview object to list
             }
 
-            mAdapter = new RecipeSearchResultAdapter(getContext(), recipePreviewsList,this);
+            mAdapter = new RecipeSearchResultAdapter(getContext(), recipePreviewsList, this);
             mRecyclerView.setAdapter(mAdapter);
         }
     }
 
     @Override
     public void onRecipeClick(int position) {
-        Intent intent = new Intent(getActivity(),ShowRecipe.class);
+        Intent intent = new Intent(getActivity(), ShowRecipe.class);
         intent.putExtra("title", recipePreviewsList.get(position).getTitle());
         intent.putExtra("ingr", recipePreviewsList.get(position).getIngredients());
         intent.putExtra("img", recipePreviewsList.get(position).getThumbnail());

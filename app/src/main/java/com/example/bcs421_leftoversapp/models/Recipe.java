@@ -1,5 +1,6 @@
 package com.example.bcs421_leftoversapp.models;
 
+//class to create recipes in the saved recipe database
 public class Recipe {
     private long mId;
     private String mTitle;
@@ -9,7 +10,8 @@ public class Recipe {
     private User user;
 
     //default constructor
-    public Recipe(){ };
+    public Recipe() {
+    }
 
     //parameter constructor
     public Recipe(String mTitle, String mIngredients, String mThumbnail, String mHref) {

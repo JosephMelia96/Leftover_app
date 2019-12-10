@@ -1,7 +1,5 @@
 package com.example.bcs421_leftoversapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -9,11 +7,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.bcs421_leftoversapp.DataBase.UsersContract;
-import com.example.bcs421_leftoversapp.models.User;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -34,8 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
-import java.util.Objects;
 
+//sign in screen, sign in with Google or Facebook
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     int RC_SIGN_IN = 0;
@@ -48,6 +45,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Callback manager for Facebook
     private CallbackManager callbackManager;
 
+    // need to make an Access Token Tracker for Facebook
+    AccessTokenTracker tokenTracker = new AccessTokenTracker() {
+        @Override
+        protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+            if (currentAccessToken == null) {
+                Toast.makeText(MainActivity.this, "User Logged out", Toast.LENGTH_LONG).show();
+            } else
+                loadUserProfile(currentAccessToken);
+        }
+
+
+    };
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+            case R.id.signInButton:
+                signIn();
+                break;
+        }
+    }
+
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Check for existing Google Sign In account, if the user is already signed in
+        // the GoogleSignInAccount will be non-null.
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        updateUI(account);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,13 +91,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.signInButton).setOnClickListener(this);
         this.mUsersContract = new UsersContract(this);
-        facebookIntent = new Intent(this,HomeActivity.class);
+        facebookIntent = new Intent(this, HomeActivity.class);
 
         // Setting the login button for facebook
         loginButton = findViewById(R.id.Login_button);
         // Making the callbackManager and the loginButton
         callbackManager = CallbackManager.Factory.create();
-        loginButton.setReadPermissions(Arrays.asList("email","public_profile"));
+        loginButton.setReadPermissions(Arrays.asList("email", "public_profile"));
         checkLoginStatus();
 
         // For facebook, we need to make a registerCallBack function
@@ -95,33 +129,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v) {
-
-        switch (v.getId()) {
-            case R.id.signInButton:
-                signIn();
-                break;
-        }
-    }
-
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        updateUI(account);
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-       // added this callbackmanager line for facebook stuff
-        callbackManager.onActivityResult(requestCode,resultCode,data);
+        // added this callbackmanager line for facebook stuff
+        callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
@@ -133,22 +143,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    // need to make an Access Token Tracker for Facebook
-    AccessTokenTracker tokenTracker = new AccessTokenTracker(){
-        @Override
-        protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-            if(currentAccessToken==null){
-                Toast.makeText(MainActivity.this,"User Logged out",Toast.LENGTH_LONG).show();
-            }
-            else
-                loadUserProfile(currentAccessToken);
-        }
-
-
-    };
-
     // load facebook users information
-    private void loadUserProfile(AccessToken newAccessToken){
+    private void loadUserProfile(AccessToken newAccessToken) {
         GraphRequest request = GraphRequest.newMeRequest(newAccessToken, new GraphRequest.GraphJSONObjectCallback() {
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
@@ -156,10 +152,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     String id = object.getString("id");
                     //pass facebook user info into intent
-                    facebookIntent.putExtra("firstName",object.getString("first_name"));
-                    facebookIntent.putExtra("lastName",object.getString("last_name"));
-                    facebookIntent.putExtra("email",object.getString("email"));
-                    facebookIntent.putExtra("image_url","https://graph.facebook.com/"+id+"/picture?type=normal");
+                    facebookIntent.putExtra("firstName", object.getString("first_name"));
+                    facebookIntent.putExtra("lastName", object.getString("last_name"));
+                    facebookIntent.putExtra("email", object.getString("email"));
+                    facebookIntent.putExtra("image_url", "https://graph.facebook.com/" + id + "/picture?type=normal");
                     RequestOptions requestOptions = new RequestOptions();
                     requestOptions.dontAnimate();
                 } catch (JSONException e) {
@@ -169,14 +165,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         Bundle parameters = new Bundle();
-        parameters.putString("fields","first_name,last_name,email,id");
+        parameters.putString("fields", "first_name,last_name,email,id");
         request.setParameters(parameters);
         request.executeAsync();
 
     }
 
-    private void checkLoginStatus(){
-        if(AccessToken.getCurrentAccessToken()!=null){
+    private void checkLoginStatus() {
+        if (AccessToken.getCurrentAccessToken() != null) {
             loadUserProfile(AccessToken.getCurrentAccessToken());
             startActivity(facebookIntent);
         }

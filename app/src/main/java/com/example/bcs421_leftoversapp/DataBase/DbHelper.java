@@ -3,9 +3,11 @@ package com.example.bcs421_leftoversapp.DataBase;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import static com.example.bcs421_leftoversapp.DataBase.UsersContract.*;
-import static com.example.bcs421_leftoversapp.DataBase.RecipesContract.*;
 
+import static com.example.bcs421_leftoversapp.DataBase.RecipesContract.RecipesEntry;
+import static com.example.bcs421_leftoversapp.DataBase.UsersContract.UsersEntry;
+
+//helper class to create empty database
 public class DbHelper extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERSION = 1;

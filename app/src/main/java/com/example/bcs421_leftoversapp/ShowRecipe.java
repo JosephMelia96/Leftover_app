@@ -1,9 +1,5 @@
 package com.example.bcs421_leftoversapp;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -17,6 +13,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.bcs421_leftoversapp.DataBase.RecipesContract;
@@ -55,7 +55,6 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
         setContentView(R.layout.activity_show_recipie);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //lock screen to portrait
 
-
         ingredients=findViewById(R.id.ingredients);
         title = findViewById(R.id.title);
         img = findViewById(R.id.img);
@@ -63,7 +62,6 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
         findViewById(R.id.btn_share).setOnClickListener(this);
         findViewById(R.id.btn_save).setOnClickListener(this);
         findViewById(R.id.btn_home).setOnClickListener(this);
-
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -92,6 +90,7 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
         changeBookmark();
     }
 
+    //open recipe URL in browser
     public void recipeSite(View view) {
         String recHref = getIntent().getStringExtra("href");
         Intent toSite = new Intent(Intent.ACTION_VIEW, Uri.parse(recHref));
@@ -101,11 +100,11 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            //share button to share recipe title and URL, and image (if user chooses)
             case R.id.btn_share:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("Would you like to share a photo with the recipe?").setPositiveButton("Yes", dialogClickListener)
                         .setNegativeButton("No", dialogClickListener).show();
-                //deletePhoto();
                 break;
             case R.id.btn_save:
                 saveRecipeIntoDatabase();
@@ -134,17 +133,17 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
 
     //method to take a photo using google camera2 intent
     private void takePhoto() {
-        // Ensure that there's a camera activity to handle the intent
+        //Ensure that there's a camera activity to handle the intent
         if (camIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
+            //Create the File where the photo should go
             File photoFile = null;
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-                // Error occurred while creating the File
+                //Error occurred while creating the File
                 Toast.makeText(this, "Photo didn't save", Toast.LENGTH_SHORT).show();
             }
-            // Continue only if the File was successfully created
+            //Continue only if the File was successfully created
             if (photoFile != null) {
                 imageUri = FileProvider.getUriForFile(this,
                         "com.example.android.fileprovider",
@@ -154,7 +153,8 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
             }
         }
     }
-    //method to delete shared photo after it's taken
+
+    //Method to delete shared photo after it's taken
     private void deletePhoto() {
         File dir = new File("/sdcard/Android/data/com.example.bcs421_leftoversapp/files/Pictures");
         if (dir.isDirectory())
@@ -167,6 +167,8 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
         }
     }
 
+    //Once camera intent is completed, if image was taken, attach to share and start share of
+    // image and wildcard type
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         String shareSubject = "Check This Delicious Recipe Out!";
         String shareBody = getIntent().getStringExtra("title") +
@@ -183,6 +185,7 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
         }
     }
 
+    //Bookmark recipe into user's database
     public void saveRecipeIntoDatabase() {
     GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
     this.mUsersContract = new UsersContract(this); //initialize UsersContract

@@ -2,20 +2,14 @@ package com.example.bcs421_leftoversapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,8 +28,8 @@ import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
 public class RecipeSearchFragment extends Fragment implements SearchView.OnQueryTextListener, RecipeSearchResultAdapter.OnRecipeListener {
-  // value for how many recipes card to show
-    private final int MAX_RECIPES_TO_SHOW = 50;
+    // value for how many recipes card to show
+    private final int MAX_RECIPES_TO_SHOW = 30;
 
     private RecipeService recipeService;
     private SearchView searchView;
@@ -54,7 +48,7 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
         initialiseApiClient();
         searchView = v.findViewById(R.id.searchBar);
         mRecyclerView = v.findViewById(R.id.recyclerView);
-        mRecyclerView.setHasFixedSize(true); // since size of view will not change, set this to true to increase apps efficiency
+        mRecyclerView.setHasFixedSize(true); // since size of view will not change, is set to true to increase apps efficiency
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -67,55 +61,36 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
         //will automatically load which ever category was pressed
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            searchView.setQuery(bundle.getString("category"),false);
+            searchView.setQuery(bundle.getString("category"), false);
         }
-
         subscribeToSearchTextChanges();
-
-        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                Intent intent = new Intent(getActivity(),ShowRecipe.class);
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-            }
-        });
-
         return v;
     }
 
-    //Create a new ItemTouchHelper with a SimpleCallback that handles both LEFT and RIGHT swipe directions
-    // Create an item touch helper to handle swiping items off the list
-
-
-
-        private void initialiseApiClient() {
+    //initialize recipepuppy API client to use for searching
+    private void initialiseApiClient() {
         this.recipeService = new RecipePuppyService();
     }
 
+    //checks for successful submit of query
     @Override
     public boolean onQueryTextSubmit(String query) {
         return true;
     }
 
+    /*clears arraylist recipeList of type recipePreviews when the text changes, used to show new
+    cards when query is changed, instead of adding the new results to the end of the current cards */
     @Override
     public boolean onQueryTextChange(final String newText) {
         if (newText.trim().length() == 0) {
+            recipeList.clear();
             return true;
         }
         searchTextSubject.onNext(newText);
         return true;
     }
 
-
+    //method to watch search bar for text changes, searches recipepuppy for text when changed
     public void subscribeToSearchTextChanges() {
 
         // Array list to hold recipePreview list passed by query
@@ -125,12 +100,13 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(recipes -> {
+                    recipeList.clear();
                     recipeList.addAll(recipes);
-                    mAdapter = new RecipeSearchResultAdapter(getContext(),recipeList, this);
+                    mAdapter = new RecipeSearchResultAdapter(getContext(), recipeList, this);
                     mRecyclerView.setAdapter(mAdapter);
 
                     // remove recipes without thumbnails from recipeList
-                    for(int i = mAdapter.getItemCount()-1; i >= 0 ; i--) {
+                    for (int i = mAdapter.getItemCount() - 1; i >= 0; i--) {
                         if (String.valueOf(recipeList.get(i).getThumbnail()).equals("")) {
                             recipeList.remove(i);
                         }
@@ -139,9 +115,10 @@ public class RecipeSearchFragment extends Fragment implements SearchView.OnQuery
                 .subscribe());
     }
 
+    //when recipe is clicked, send that recipe's information to the ShowRecipe activity
     @Override
     public void onRecipeClick(int position) {
-        Intent intent = new Intent(getActivity(),ShowRecipe.class);
+        Intent intent = new Intent(getActivity(), ShowRecipe.class);
         intent.putExtra("title", recipeList.get(position).getTitle());
         intent.putExtra("ingr", recipeList.get(position).getIngredients());
         intent.putExtra("img", recipeList.get(position).getThumbnail());

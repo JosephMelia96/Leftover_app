@@ -12,8 +12,8 @@ import com.example.bcs421_leftoversapp.models.Recipe;
 import com.example.bcs421_leftoversapp.models.User;
 
 import java.util.ArrayList;
-import java.util.List;
 
+//class to add user-saved recipes to database, foreign key to user
 public final class RecipesContract {
 
     // Database fields
@@ -31,14 +31,9 @@ public final class RecipesContract {
             RecipesEntry.COL_USER_ID
     };
 
-    //column and table names
-    public static final class RecipesEntry implements BaseColumns {
-        public static final String TABLE_NAME="recipes";
-        public static final String COL_TITLE="title";
-        public static final String COL_INGREDIENTS="ingredients";
-        public static final String COL_THUMBNAIL="thumbnail";
-        public static final String COL_HREF="href";
-        public static final String COL_USER_ID="user_id";
+    //open database
+    public void open() throws SQLException {
+        mDb = mDbHelper.getWritableDatabase();
     }
 
     //constructor to open recipe table
@@ -53,9 +48,21 @@ public final class RecipesContract {
         }
     }
 
-    //open database
-    public void open() throws SQLException{
-        mDb = mDbHelper.getWritableDatabase();
+    //used to add recipe into database
+    public Recipe addRecipe(String title, String ingredients, String thumbnail, String href, long userId) {
+        ContentValues cv = new ContentValues();
+        cv.put(RecipesEntry.COL_TITLE, title);
+        cv.put(RecipesEntry.COL_INGREDIENTS, ingredients);
+        cv.put(RecipesEntry.COL_THUMBNAIL, thumbnail);
+        cv.put(RecipesEntry.COL_HREF, href);
+        cv.put(RecipesEntry.COL_USER_ID, userId);
+        long insertId = mDb.insert(RecipesEntry.TABLE_NAME, null, cv);
+        Cursor cursor = mDb.query(RecipesEntry.TABLE_NAME, mAllColumns, RecipesEntry._ID +
+                " = " + insertId, null, null, null, null);
+        cursor.moveToFirst();
+        Recipe newRecipe = cursorToRecipe(cursor);
+        cursor.close();
+        return newRecipe;
     }
 
     //close database
@@ -63,32 +70,15 @@ public final class RecipesContract {
         mDbHelper.close();
     }
 
-    //used to add recipe into database
-    public Recipe addRecipe(String title, String ingredients, String thumbnail, String href, long userId) {
-        ContentValues cv = new ContentValues();
-        cv.put(RecipesEntry.COL_TITLE,title);
-        cv.put(RecipesEntry.COL_INGREDIENTS,ingredients);
-        cv.put(RecipesEntry.COL_THUMBNAIL,thumbnail);
-        cv.put(RecipesEntry.COL_HREF,href);
-        cv.put(RecipesEntry.COL_USER_ID,userId);
-        long insertId = mDb.insert(RecipesEntry.TABLE_NAME, null, cv);
-        Cursor cursor = mDb.query(RecipesEntry.TABLE_NAME, mAllColumns, RecipesEntry._ID +
-                " = " + insertId,null, null, null, null);
-        cursor.moveToFirst();
-        Recipe newRecipe = cursorToRecipe(cursor);
-        cursor.close();
-        return newRecipe;
-    }
-
     //used to list all recipes of User
     public ArrayList<Recipe> getRecipesOfUser(long userId) {
         ArrayList<Recipe> listRecipe = new ArrayList<Recipe>();
 
         Cursor cursor = mDb.query(RecipesEntry.TABLE_NAME, mAllColumns, RecipesEntry.COL_USER_ID + " = ?",
-                new String[] {String.valueOf(userId) }, null, null, null);
+                new String[]{String.valueOf(userId)}, null, null, null);
 
         cursor.moveToFirst();
-        while(!cursor.isAfterLast()) {
+        while (!cursor.isAfterLast()) {
             Recipe recipe = cursorToRecipe(cursor);
             listRecipe.add(recipe);
             cursor.moveToNext();
@@ -97,6 +87,14 @@ public final class RecipesContract {
         return listRecipe;
     }
 
+    //remove selected saved recipe of current user from database
+    public void removeSavedRecipe(long id) {
+        mDb = mDbHelper.getWritableDatabase();
+        String dlQuery = "DELETE FROM " + RecipesEntry.TABLE_NAME + " WHERE " + RecipesEntry._ID + " = " + id;
+        Cursor cursor = mDb.rawQuery(dlQuery, null);
+        cursor.moveToFirst();
+        //mDb.close();
+    }
 
 
     //used to set data to specific recipe object
@@ -118,15 +116,15 @@ public final class RecipesContract {
         return recipe;
     }
 
-
-    public void removeSavedRecipe(long id){
-        mDb = mDbHelper.getWritableDatabase();
-        String dlQuery = "DELETE FROM " + RecipesEntry.TABLE_NAME + " WHERE " + RecipesEntry._ID + " = " + id;
-        Cursor cursor = mDb.rawQuery(dlQuery, null);
-        cursor.moveToFirst();
-        //mDb.close();
+    //column and table names
+    public static final class RecipesEntry implements BaseColumns {
+        public static final String TABLE_NAME = "recipes";
+        public static final String COL_TITLE = "title";
+        public static final String COL_INGREDIENTS = "ingredients";
+        public static final String COL_THUMBNAIL = "thumbnail";
+        public static final String COL_HREF = "href";
+        public static final String COL_USER_ID = "user_id";
     }
-
 
 
 }
