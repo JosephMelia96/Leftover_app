@@ -32,7 +32,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 
 
-public class SavedRecipesFragment extends Fragment {
+public class SavedRecipesFragment extends Fragment implements RecipeSearchResultAdapter.OnRecipeListener{
 
     UsersContract mUserContract;
     RecipesContract mRecipeContract;
@@ -68,7 +68,7 @@ public class SavedRecipesFragment extends Fragment {
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getActivity());
         User user = mUserContract.getParentIdByEmail(acct.getEmail());
         //add recipes to list
-//        addItemsToList(user.getID());
+        addItemsToList(user.getID());
 
         //launch showRecipeActivity when list item is clicked
 //        savedRecipeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -103,21 +103,31 @@ public class SavedRecipesFragment extends Fragment {
         return v;
     }
 
-//    public void addItemsToList(Long id){
-//        ArrayList<Recipe> savedRecipeList = mRecipeContract.getRecipesOfUser(id);
-//
-//        if (savedRecipeList.size() != 0) {
-//            for (int i = 0; i < savedRecipeList.size(); i++) {
-//                // use the RecipePreview constructor to create new Preview objects
-//                this.mRecipePreview = new RecipePreview(savedRecipeList.get(i).getTitle(),
-//                        savedRecipeList.get(i).getHref(), savedRecipeList.get(i).getIngredients(),
-//                        savedRecipeList.get(i).getThumbnail());
-//                recipePreviewsList.add(mRecipePreview); //add the recipePreview object to list
-//            }
-//
-//            mAdapter = new RecipeSearchResultAdapter(getContext(), recipePreviewsList);
-//            mRecyclerView.setAdapter(mAdapter);
-//        }
-//    }
+    public void addItemsToList(Long id){
+        ArrayList<Recipe> savedRecipeList = mRecipeContract.getRecipesOfUser(id);
+        recipePreviewsList = new ArrayList<>();
 
+        if (savedRecipeList.size() != 0) {
+            for (int i = 0; i < savedRecipeList.size(); i++) {
+                // use the RecipePreview constructor to create new Preview objects
+                this.mRecipePreview = new RecipePreview(savedRecipeList.get(i).getTitle(),
+                        savedRecipeList.get(i).getHref(), savedRecipeList.get(i).getIngredients(),
+                        savedRecipeList.get(i).getThumbnail());
+                recipePreviewsList.add(mRecipePreview); //add the recipePreview object to list
+            }
+
+            mAdapter = new RecipeSearchResultAdapter(getContext(), recipePreviewsList,this);
+            mRecyclerView.setAdapter(mAdapter);
+        }
+    }
+
+    @Override
+    public void onRecipeClick(int position) {
+        Intent intent = new Intent(getActivity(),ShowRecipe.class);
+        intent.putExtra("title", recipePreviewsList.get(position).getTitle());
+        intent.putExtra("ingr", recipePreviewsList.get(position).getIngredients());
+        intent.putExtra("img", recipePreviewsList.get(position).getThumbnail());
+        intent.putExtra("href", recipePreviewsList.get(position).getHref());
+        startActivity(intent);
+    }
 }
