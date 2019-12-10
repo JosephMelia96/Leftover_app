@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -83,6 +84,7 @@ public class SavedRecipesFragment extends Fragment implements RecipeSearchResult
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 mRecipeContract.removeSavedRecipe(savedRecipeList.get(viewHolder.getLayoutPosition()).getId());
+                Toast.makeText(getContext(), "Recipe Unsaved", Toast.LENGTH_SHORT).show();
                 addItemsToList(user.getID());
             }
         }).attachToRecyclerView(mRecyclerView);;

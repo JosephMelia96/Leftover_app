@@ -34,8 +34,8 @@ import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
 public class RecipeSearchFragment extends Fragment implements SearchView.OnQueryTextListener, RecipeSearchResultAdapter.OnRecipeListener {
-
-    private final int MAX_RECIPES_TO_SHOW = 20;
+  // value for how many recipes card to show
+    private final int MAX_RECIPES_TO_SHOW = 50;
 
     private RecipeService recipeService;
     private SearchView searchView;
