@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
     UsersContract mUsersContract;
     RecipesContract mRecipesContract;
     String currentPhotoPath;
+    String recTitle;
     static final int REQUEST_TAKE_PHOTO = 1;
     public Uri imageUri;
     Intent camIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -65,9 +67,10 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
+        changeBookmark();
 
         String recIngr = getIntent().getStringExtra("ingr");
-        String recTitle = getIntent().getStringExtra("title");
+        recTitle = getIntent().getStringExtra("title");
         String recImg = getIntent().getStringExtra("img");
         Glide.with(img).load(String.valueOf(recImg)).placeholder(R.drawable.noimg).into(img);
         if(recIngr.indexOf(",") != -1){
@@ -76,6 +79,12 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
         recIngr = "- " + recIngr;
         title.setText(recTitle);
         ingredients.setText(recIngr);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        changeBookmark();
     }
 
     public void recipeSite(View view) {
@@ -95,6 +104,7 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
                 break;
             case R.id.btn_save:
                 saveRecipeIntoDatabase();
+                    changeBookmark();
                 break;
             case R.id.btn_home:
                 startActivity(new Intent(this,HomeActivity.class));
@@ -174,7 +184,7 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
     this.mRecipesContract = new RecipesContract(this); //initialize RecipesContract
     User user = mUsersContract.getParentIdByEmail(acct.getEmail());
 
-    if (!checkForSavedRecipe(user,getIntent().getStringExtra("title"))) {
+    if (!checkForSavedRecipe(user)) {
         mRecipesContract.addRecipe(getIntent().getStringExtra("title"),getIntent().getStringExtra("ingr"),
                 getIntent().getStringExtra("img"),getIntent().getStringExtra("href"),user.getID());
 
@@ -183,17 +193,29 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
 }
 
     //check if recipe is saved for user...won't save recipe to prevent duplicates
-    public boolean checkForSavedRecipe(User user, String title) {
+    public boolean checkForSavedRecipe(User user) {
+        findViewById(R.id.btn_saved).setVisibility(View.GONE);
         this.mRecipesContract = new RecipesContract(this); //initialize RecipesContract
         ArrayList<Recipe> savedRecipeList = mRecipesContract.getRecipesOfUser(user.getID());
 
         for (int i=0;i<savedRecipeList.size();i++) {
-            if(savedRecipeList.get(i).getTitle().equals(title)) {
-                Toast.makeText(this, "Recipe Already Saved", Toast.LENGTH_SHORT).show();
+            if(savedRecipeList.get(i).getTitle().equals(recTitle)) {
+                //Toast.makeText(this, "Recipe Already Saved", Toast.LENGTH_SHORT).show();
                 return true;
             }
         }
         return false;
+    }
+
+    public void changeBookmark(){
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        this.mUsersContract = new UsersContract(this); //initialize UsersContract
+        User user = mUsersContract.getParentIdByEmail(acct.getEmail());
+        if(checkForSavedRecipe(user)) {
+            LinearLayout nonSaved = (LinearLayout) findViewById(R.id.btn_save).getParent();
+            nonSaved.removeView(findViewById(R.id.btn_save));
+            findViewById(R.id.btn_saved).setVisibility(View.VISIBLE);
+        }
     }
 
     //dialog function to check if user wants to include an image with their recipe share
