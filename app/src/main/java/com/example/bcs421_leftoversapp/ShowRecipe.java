@@ -71,7 +71,7 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        changeBookmark();
+        changeBookmark(); //Check if bookmark should be filled in or blank for saved recipe
 
         String recIngr = getIntent().getStringExtra("ingr");
         recTitle = getIntent().getStringExtra("title");
@@ -87,6 +87,7 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
 
     @Override
     protected void onResume() {
+        //Check if recipes are saved when page is reopened to see what bookmark image should be displayed
         super.onResume();
         changeBookmark();
     }
@@ -108,7 +109,7 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
                 break;
             case R.id.btn_save:
                 saveRecipeIntoDatabase();
-                    changeBookmark();
+                    changeBookmark();//change bookmark image as soon as save button is pressed.  
                 break;
             case R.id.btn_home:
                 startActivity(new Intent(this,HomeActivity.class));
@@ -210,15 +211,15 @@ public class ShowRecipe extends AppCompatActivity implements View.OnClickListene
         }
         return false;
     }
-
+    //checks for current state of bookmark & adjusts image accordingly.
     public void changeBookmark(){
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
         this.mUsersContract = new UsersContract(this); //initialize UsersContract
         User user = mUsersContract.getParentIdByEmail(acct.getEmail());
-        if(checkForSavedRecipe(user)) {
-            LinearLayout nonSaved = (LinearLayout) findViewById(R.id.btn_save).getParent();
-            nonSaved.removeView(findViewById(R.id.btn_save));
-            findViewById(R.id.btn_saved).setVisibility(View.VISIBLE);
+        if(checkForSavedRecipe(user)) { //checks if user has this recipe saved
+            LinearLayout nonSaved = (LinearLayout) findViewById(R.id.btn_save).getParent(); //intialize linear layout where bookmark image will change
+            nonSaved.removeView(findViewById(R.id.btn_save));//remove unfilled bookmark
+            findViewById(R.id.btn_saved).setVisibility(View.VISIBLE);//display filled in bookmark image
         }
     }
 
